@@ -1,6 +1,6 @@
 
 
-package ev3.exercises;
+package br.edu.ifms.ev3.exercicios;
 
 import ev3.exercises.library.*;
 import lejos.hardware.Button;
