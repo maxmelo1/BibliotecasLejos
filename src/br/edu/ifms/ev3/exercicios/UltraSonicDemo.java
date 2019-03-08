@@ -2,7 +2,7 @@
 
 package br.edu.ifms.ev3.exercicios;
 
-import ev3.exercises.library.*;
+import br.edu.ifms.ev3.wrappers.UltraSonicSensor;
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.*;
