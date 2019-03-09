@@ -16,5 +16,6 @@
   - Perceber a diferença de recursos do unregulated pro regulated motor.
 - Realizar movimento periódico.
 	- "Zigue zague" (k*sin).
+	- Entender o que a constante k modifica no comportamento.
 	- Efetuar movimento em circulo por equação da circunferência (x-a)<sup>2</sup>+(y-b)<sup>2</sup>=r<sup>2</sup> .
 	- Desafio desafiador: modificar para movimento eliptico.
