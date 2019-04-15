@@ -1,5 +1,6 @@
-package br.edu.ifms.ev3.wrappers;
+package br.edu.ifms.ev3.exercicios;
 
+import br.edu.ifms.ev3.wrappers.TouchSensorWrapper;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
@@ -17,6 +18,62 @@ public class GuidedDriver {
 	public GuidedDriver(EV3LargeRegulatedMotor me, EV3LargeRegulatedMotor md) {
 		this.me = me;
 		this.md = md;
+		
+		//zigzagNavigate();
+		
+		zigZagSinCosNavigate();
+	}
+	
+	public void zigzagNavigate() {
+		TouchSensorWrapper touchSensor = new TouchSensorWrapper(SensorPort.S2);
+		
+		float i=0;
+		
+		do{
+			
+			
+			int k = 90;
+			Float steer = (float) ((float)k*Math.sin(i));
+					
+			this.move( steer.intValue(), 400f);
+			
+			
+			i += 0.1;
+			
+			Delay.msDelay(30);
+			
+			if( i > Math.PI  ) {
+				i = (float) -Math.PI;
+			}
+		}
+		while(! touchSensor.isPressed() );
+	}
+	
+	
+	public void zigZagSinCosNavigate() {
+		TouchSensorWrapper touchSensor = new TouchSensorWrapper(SensorPort.S2);
+				
+		float i=0;	
+		
+		do{
+			
+					
+			md.setSpeed( (int)(Math.sin(i)*300) );
+			me.setSpeed( (int)(Math.cos(i)*300) );
+			
+			md.forward();
+			me.forward();
+			
+			
+			i += 0.05;
+			
+			Delay.msDelay(60);
+			
+			if( i > Math.PI  ) {
+				i = (float) -Math.PI;
+			}
+		}
+		while(! touchSensor.isPressed() );
 	}
 	
 	
@@ -64,32 +121,6 @@ public class GuidedDriver {
 	
 	public static void main(String[] args) {
 		GuidedDriver gd = new GuidedDriver(new EV3LargeRegulatedMotor(MotorPort.A), new EV3LargeRegulatedMotor(MotorPort.B));
-		
-		EV3TouchSensor touchSensor = new EV3TouchSensor(SensorPort.S2);
-		SensorMode touch =  touchSensor.getTouchMode();
-		float[] sample = new float[touch.sampleSize()];
-		
-		float i=0;
-		
-		do{
-			
-			
-			int k = 90;
-			Float steer = (float) ((float)k*Math.sin(i));
-					
-			gd.move( steer.intValue(), 400f);
-			
-			touch.fetchSample(sample, 0);
-			
-			i += 0.1;
-			
-			Delay.msDelay(30);
-			
-			if( i > Math.PI  ) {
-				i = (float) -Math.PI;
-			}
-		}
-		while( sample[0] == 0 );
 
 	}
 
