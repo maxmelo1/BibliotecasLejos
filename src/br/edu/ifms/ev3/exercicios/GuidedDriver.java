@@ -21,7 +21,7 @@ public class GuidedDriver {
 		
 		//zigzagNavigate();
 		
-		zigZagSinCosNavigate();
+		//zigZagSinCosNavigate();
 	}
 	
 	public void zigzagNavigate() {
@@ -80,7 +80,7 @@ public class GuidedDriver {
 	/**
 	 * Move o robô para a direita ou esquerda
 	 * @param dir 0 frente, direita(100), esquerda(-100)
-	 * @param power 0 - 700
+	 * @param abs(power) 0 - 700
 	 */
 	public void move(Integer dir, Float power){
 		Float powerD = 0f;
