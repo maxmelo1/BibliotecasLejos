@@ -1,6 +1,6 @@
 
 
-package br.edu.ifms.ev3.exercicios;
+package br.edu.ifms.ev3.exemplos;
 
 import br.edu.ifms.ev3.wrappers.UltraSonicSensor;
 import lejos.hardware.Button;

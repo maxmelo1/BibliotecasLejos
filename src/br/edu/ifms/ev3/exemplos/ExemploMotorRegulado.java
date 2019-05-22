@@ -1,4 +1,4 @@
-package br.edu.ifms.ev3.exercicios;
+package br.edu.ifms.ev3.exemplos;
 
 import lejos.hardware.Button;
 import lejos.hardware.Sound;

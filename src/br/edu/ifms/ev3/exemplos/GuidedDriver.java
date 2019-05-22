@@ -1,4 +1,4 @@
-package br.edu.ifms.ev3.exercicios;
+package br.edu.ifms.ev3.exemplos;
 
 import br.edu.ifms.ev3.wrappers.TouchSensorWrapper;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
