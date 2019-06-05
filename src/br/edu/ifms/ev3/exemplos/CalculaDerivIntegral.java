@@ -3,12 +3,12 @@ package br.edu.ifms.ev3.exemplos;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.apache.commons.math3.analysis.differentiation.DerivativeStructure;
+/*import org.apache.commons.math3.analysis.differentiation.DerivativeStructure;
 import org.apache.commons.math3.analysis.differentiation.UnivariateDifferentiableFunction;
 import org.apache.commons.math3.analysis.integration.SimpsonIntegrator;
 import org.apache.commons.math3.analysis.integration.TrapezoidIntegrator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
-import org.apache.commons.math3.exception.DimensionMismatchException;
+import org.apache.commons.math3.exception.DimensionMismatchException;*/
 
 import br.edu.ifms.ev3.wrappers.MathUtils;
 
@@ -19,7 +19,7 @@ public class CalculaDerivIntegral {
 		int order = 1;
 		double x= 3.; 
 		
-		DerivativeStructure dx = new DerivativeStructure(params, order, 0, x);
+		/*DerivativeStructure dx = new DerivativeStructure(params, order, 0, x);
 		
 		//combinação linear y = X^2 + 0.x
 		DerivativeStructure y = new DerivativeStructure( 1., dx.pow(2), 0., dx );
@@ -91,7 +91,7 @@ public class CalculaDerivIntegral {
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		
 		
 	}

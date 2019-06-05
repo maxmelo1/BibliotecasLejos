@@ -1,5 +1,3 @@
-
-
 package br.edu.ifms.ev3.exemplos;
 
 import br.edu.ifms.ev3.wrappers.UltraSonicSensor;
