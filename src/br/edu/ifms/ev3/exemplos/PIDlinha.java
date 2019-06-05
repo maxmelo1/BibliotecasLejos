@@ -6,6 +6,7 @@ import lejos.hardware.Button;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
+import lejos.utility.Delay;
 
 public class PIDlinha {
 	public static void main (String [] args) {
@@ -13,30 +14,32 @@ public class PIDlinha {
 		ColorSensor CorD = new ColorSensor(SensorPort.S1);
 		
 		float error;
-		float media = 0.42f;
-		int kp = 50;
-		int kd = 10;
+		float media = 0.45f;
+		int kp = 10, kd = 50,ki = 10;
 		int dir,prop;
-		float deriv;
+		float deriv, integral;
 		long time;
-		long lastTime;
+		long lastTime = 0;
 		float lastError = 0.0f;
 		
 		CorD.setRedMode();
-		lastTime = System.currentTimeMillis();
 		while (Button.ESCAPE.isUp()) {
-			error = CorD.getAmbient() - media;
-			prop = (int)error * kp;
+			error = 10*(CorD.getAmbient() - media); //parcela proporcional
+			prop = (int)(error * kp);
 			
-			//System.out.println(error);
+			//System.out.println("erro: "+error);
+			//System.out.println("proporcional: "+prop);
 			
-			time = System.currentTimeMillis();
+			time = System.currentTimeMillis();//parcela derivativa
 			deriv = kd*(error - lastError)/(time - lastTime);
 			lastTime = time;
 			lastError = error;
+			//System.out.println("derivativo: "+deriv);
+		
 			
-			dir = (int)deriv + prop;
-			gd.move(dir, 200.0f);
+			dir = (int)(deriv + prop);//movimento
+			gd.move(dir, 300.0f);
+			//Delay.msDelay(2000);
 			
 			}
 	}
