@@ -3,12 +3,8 @@ package br.edu.ifms.ev3.exemplos;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-/*import org.apache.commons.math3.analysis.differentiation.DerivativeStructure;
-import org.apache.commons.math3.analysis.differentiation.UnivariateDifferentiableFunction;
-import org.apache.commons.math3.analysis.integration.SimpsonIntegrator;
-import org.apache.commons.math3.analysis.integration.TrapezoidIntegrator;
-import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
-import org.apache.commons.math3.exception.DimensionMismatchException;*/
+
+
 
 import br.edu.ifms.ev3.wrappers.MathUtils;
 
