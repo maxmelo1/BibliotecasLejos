@@ -6,7 +6,6 @@ import lejos.hardware.Button;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
-import lejos.utility.Delay;
 
 public class PIDlinha {
 	public static void main (String [] args) {
@@ -15,9 +14,9 @@ public class PIDlinha {
 		
 		float error;
 		float media = 0.45f;
-		int kp = 10, kd = 50,ki = 10;
+		int kp = 10, kd = 30;
 		int dir,prop;
-		float deriv, integral;
+		float deriv, integral = 0, ki = 0.5f;
 		long time;
 		long lastTime = 0;
 		float lastError = 0.0f;
@@ -35,12 +34,16 @@ public class PIDlinha {
 			lastTime = time;
 			lastError = error;
 			//System.out.println("derivativo: "+deriv);
+			
+			integral = ki*(error + integral); //parcela integral
 		
 			
-			dir = (int)(deriv + prop);//movimento
-			gd.move(dir, 300.0f);
+			dir = (int)(deriv + prop + integral);//movimento
+			gd.move(dir, 200.0f);
 			//Delay.msDelay(2000);
 			
 			}
+			
+		
 	}
 }

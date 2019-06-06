@@ -103,6 +103,10 @@ public class GuidedDriver {
 		powerD = power*ratioD;
 		powerE = power*ratioE;
 		
+		powerD = powerD< 700f? powerD : 700f;
+		powerE = powerE< 700f? powerE : 700f;
+		
+		
 		me.setSpeed(powerE);
 		md.setSpeed(powerD);
 		
