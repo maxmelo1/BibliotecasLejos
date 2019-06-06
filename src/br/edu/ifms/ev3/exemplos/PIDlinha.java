@@ -9,21 +9,21 @@ import lejos.hardware.port.SensorPort;
 
 public class PIDlinha {
 	public static void main (String [] args) {
-		GuidedDriver gd = new GuidedDriver(new EV3LargeRegulatedMotor(MotorPort.A), new EV3LargeRegulatedMotor(MotorPort.B));
+		GuidedDriver gd = new GuidedDriver(new EV3LargeRegulatedMotor(MotorPort.C), new EV3LargeRegulatedMotor(MotorPort.D));
 		ColorSensor CorD = new ColorSensor(SensorPort.S1);
 		
-		float error;
-		float media = 0.45f;
-		int kp = 10, kd = 30;
+		double error;
+		double media = 0.2;
+		int kp = 100, kd = 300;
 		int dir,prop;
-		float deriv, integral = 0, ki = 0.5f;
+		double deriv, integral = 0, ki = 0.5;
 		long time;
 		long lastTime = 0;
-		float lastError = 0.0f;
+		double lastError = 0.0f;
 		
 		CorD.setRedMode();
 		while (Button.ESCAPE.isUp()) {
-			error = 10*(CorD.getAmbient() - media); //parcela proporcional
+			error = (CorD.getAmbient() - media); //parcela proporcional
 			prop = (int)(error * kp);
 			
 			//System.out.println("erro: "+error);
@@ -39,11 +39,15 @@ public class PIDlinha {
 		
 			
 			dir = (int)(deriv + prop + integral);//movimento
-			gd.move(dir, 200.0f);
+			gd.move(dir, 100.0f);
 			//Delay.msDelay(2000);
 			
-			}
 			
+		}
+		CorD.close();
+		
+		gd.getMd().close();
+		gd.getMe().close();
 		
 	}
 }

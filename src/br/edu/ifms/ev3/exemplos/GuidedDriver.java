@@ -123,6 +123,25 @@ public class GuidedDriver {
 	
 	
 	
+	//public void moveAng ()
+	
+	
+	public EV3LargeRegulatedMotor getMe() {
+		return me;
+	}
+
+	public void setMe(EV3LargeRegulatedMotor me) {
+		this.me = me;
+	}
+
+	public EV3LargeRegulatedMotor getMd() {
+		return md;
+	}
+
+	public void setMd(EV3LargeRegulatedMotor md) {
+		this.md = md;
+	}
+
 	public static void main(String[] args) {
 		GuidedDriver gd = new GuidedDriver(new EV3LargeRegulatedMotor(MotorPort.A), new EV3LargeRegulatedMotor(MotorPort.B));
 
