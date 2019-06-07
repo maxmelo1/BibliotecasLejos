@@ -1,16 +1,26 @@
 package br.edu.ifms.ev3.exemplos;
 
+import java.rmi.RemoteException;
+
 import br.edu.ifms.ev3.exemplos.GuidedDriver;
 import br.edu.ifms.ev3.wrappers.ColorSensor;
 import lejos.hardware.Button;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
+import lejos.remote.ev3.RMISampleProvider;
+import lejos.remote.ev3.RemoteEV3;
 
 public class PIDlinha {
 	public static void main (String [] args) {
-		GuidedDriver gd = new GuidedDriver(new EV3LargeRegulatedMotor(MotorPort.C), new EV3LargeRegulatedMotor(MotorPort.D));
+		GuidedDriver gd = new GuidedDriver(new EV3LargeRegulatedMotor(MotorPort.A), new EV3LargeRegulatedMotor(MotorPort.B));
 		ColorSensor CorD = new ColorSensor(SensorPort.S1);
+		
+		
+		
+		
+			
+			
 		
 		double error;
 		double media = 0.2;
@@ -21,7 +31,9 @@ public class PIDlinha {
 		long lastTime = 0;
 		double lastError = 0.0f;
 		
-		CorD.setRedMode();
+		
+		
+		//CorD.setRedMode();
 		while (Button.ESCAPE.isUp()) {
 			error = (CorD.getAmbient() - media); //parcela proporcional
 			prop = (int)(error * kp);
@@ -48,6 +60,8 @@ public class PIDlinha {
 		
 		gd.getMd().close();
 		gd.getMe().close();
+		
+		
 		
 	}
 }
