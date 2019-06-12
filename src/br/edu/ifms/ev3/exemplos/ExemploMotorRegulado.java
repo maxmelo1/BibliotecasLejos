@@ -26,7 +26,7 @@ public class ExemploMotorRegulado {
 		
 		// set motors to 500 degrees/second rotation.
         //motorA.setAcceleration(500);
-		me.setSpeed(500);
+		/*me.setSpeed(500);
 		me.forward();    // starts rotation.
 
         //motorA.setAcceleration(500);
@@ -56,14 +56,17 @@ public class ExemploMotorRegulado {
 
         // demonstrate rotate to target angle without wait.
         me.resetTachoCount();
-        md.resetTachoCount();
-        
-        me.rotateTo(180, true);
-        md.rotateTo(180, true);
-
+        md.resetTachoCount();*/
+		
+		me.rotate(360, true);
+        md.rotate(360, true);
         Button.waitForAnyPress();
+        me.rotate(360, true);
+        md.rotate(-360, true);
 
-        System.out.println("tach=" + me.getTachoCount());
+        /*Button.waitForAnyPress();
+
+        System.out.println("tach=" + me.getTachoCount());*/
         
         Button.waitForAnyPress();
         

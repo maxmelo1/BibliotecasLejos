@@ -3,22 +3,17 @@ package br.edu.ifms.ev3.exemplos;
 import java.rmi.RemoteException;
 
 import br.edu.ifms.ev3.wrappers.TouchSensorWrapper;
-import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
-
-import lejos.hardware.sensor.EV3TouchSensor;
-import lejos.hardware.sensor.SensorMode;
 import lejos.remote.ev3.RMIRegulatedMotor;
 import lejos.utility.Delay;
 
 
-public class GuidedDriver {
+public class RMIGuidedDriver {
 
 	private RMIRegulatedMotor me;
 	private RMIRegulatedMotor md;
 	
-	public GuidedDriver(RMIRegulatedMotor me, RMIRegulatedMotor md) {
+	public RMIGuidedDriver(RMIRegulatedMotor me, RMIRegulatedMotor md) {
 		this.me = me;
 		this.md = md;
 		

@@ -12,13 +12,12 @@ import lejos.remote.ev3.RMISampleProvider;
 import lejos.remote.ev3.RemoteEV3;
 
 public class PIDlinha {
+	
+	
 	public static void main (String [] args) {
-		GuidedDriver gd = new GuidedDriver(new EV3LargeRegulatedMotor(MotorPort.A), new EV3LargeRegulatedMotor(MotorPort.B));
+		EV3LargeRegulatedMotor me = new EV3LargeRegulatedMotor(MotorPort.A);
+		EV3LargeRegulatedMotor md = new EV3LargeRegulatedMotor(MotorPort.B);
 		ColorSensor CorD = new ColorSensor(SensorPort.S1);
-		
-		
-		
-		
 			
 			
 		
@@ -30,6 +29,7 @@ public class PIDlinha {
 		long time;
 		long lastTime = 0;
 		double lastError = 0.0f;
+		int speed = 300, p;
 		
 		
 		
@@ -51,15 +51,54 @@ public class PIDlinha {
 		
 			
 			dir = (int)(deriv + prop + integral);//movimento
-			gd.move(dir, 100.0f);
 			//Delay.msDelay(2000);
 			
+			if (dir >100) {
+				dir =100;
+			}
+			if (dir>0) {
+				me.setSpeed(speed);
+				p = speed -(speed / 100*(dir*2));
+				md.setSpeed(p);
+				if (p>=0) {
+					md.forward();
+					me.forward();
+				}
+				else {
+					md.backward();
+					me.forward();
+				}
+				
+			}else if (dir<0) {
+				md.setSpeed(speed);
+				p = speed -(speed / 100*(dir*2));
+				me.setSpeed(p);
+				if (p>=0) {
+					md.forward();
+					me.forward();
+				}
+				else {
+					me.backward();
+					md.forward();
+				}
+				
+			}
+			else {
+				md.setSpeed(speed);
+				me.setSpeed(speed);
+				
+				md.forward();
+				me.forward();
+			}
 			
 		}
 		CorD.close();
 		
-		gd.getMd().close();
-		gd.getMe().close();
+		md.close();
+		me.close();
+		
+		//gd.getMd().close();
+		//gd.getMe().close();
 		
 		
 		
