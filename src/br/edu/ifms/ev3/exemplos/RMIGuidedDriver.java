@@ -100,7 +100,7 @@ public class RMIGuidedDriver {
 			ratioE = 1 - ratioD;
 		}*/
 		
-		ratioD = -0.005f*dir + 0.5f;
+		ratioD = -0.005f*dir +0.5f;
 		ratioE = 1-ratioD;
 		
 		powerD = power*ratioD;

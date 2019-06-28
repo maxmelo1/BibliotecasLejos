@@ -44,7 +44,7 @@ public class MonitorLego {
 			long time;
 			long lastTime;
 			double lastError = 0f;
-			int speed = 200,x=0;
+			int x=0;
 				
 			lastTime = System.currentTimeMillis();
 			while (x<10) {
