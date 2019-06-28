@@ -17,7 +17,7 @@ public class MonitorLego {
 	private RemoteEV3 ev3 = null;
 	private RMIRegulatedMotor me;
 	private RMIRegulatedMotor md;
-	RMIGuidedDriver gd;
+	private RMIGuidedDriver gd;
 
 	public MonitorLego() {
 		
@@ -37,37 +37,38 @@ public class MonitorLego {
 			this.gd = new RMIGuidedDriver(me,md);
 			
 			double error;
-			double media = 0.2;
-			int kp = 100, kd = 300;
+			double media = 0.3;
+			int kp = 100, kd = 350;
 			int dir,prop;
-			double deriv, integral = 0, ki = 0.8;
+			double deriv, integral = 0, ki = 0.1;
 			long time;
-			long lastTime = 0;
-			double lastError = 0.0f;
+			long lastTime;
+			double lastError = 0f;
 			int speed = 200,x=0;
 				
+			lastTime = System.currentTimeMillis();
 			while (x<10) {
 				sample = sampleProvider.fetchSample()[0];
 				System.out.println("cor refletida: "+sample);
-				error = (sample - media); //parcela proporcional
+				error = 10* (sample - media); //parcela proporcional
 				prop = (int)(error * kp);
 				
 				time = System.currentTimeMillis();//parcela derivativa
 				deriv = kd*(error - lastError)/(time - lastTime);
 				lastTime = time;
-				lastError = error;				
+				lastError = error;
 				integral = ki*(error + integral); //parcela integral
-			
+				
 				
 				dir = (int)(deriv + prop + integral);//movimento
 				System.out.println("dir: "+dir);
-				gd.move(dir, 200f);
+				gd.move(dir, 50f);
 				x++;
-
+				
 			}	
 			me.stop(true);
 			me.stop(true);
-					
+			
 		} catch (RemoteException | MalformedURLException | NotBoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -88,7 +89,6 @@ public class MonitorLego {
 		}
 		
 	}
-	
 	
 	
 	public static void main(String[] args) {

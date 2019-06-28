@@ -70,7 +70,7 @@ public class RMIGuidedDriver {
 			
 			i += 0.05;
 			
-			Delay.msDelay(60);
+			Delay.msDelay(30);
 			
 			if( i > Math.PI  ) {
 				i = (float) -Math.PI;
