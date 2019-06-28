@@ -113,6 +113,8 @@ public class RMIGuidedDriver {
 		Integer pe = new Integer(powerE.intValue());
 		
 		try {
+			System.out.println("valor de pe: " + pe);
+			System.out.println("valor de pd: " + pd);
 		me.setSpeed(pe);
 		md.setSpeed(pd);
 		
@@ -124,6 +126,7 @@ public class RMIGuidedDriver {
 			me.backward();
 			md.backward();
 		}
+		Delay.msDelay(500);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -149,6 +152,7 @@ public class RMIGuidedDriver {
 	public void setMd(RMIRegulatedMotor md) {
 		this.md = md;
 	}
+	
 
 	public static void main(String[] args) {
 		//GuidedDriver gd = new GuidedDriver(new EV3LargeRegulatedMotor(MotorPort.A), new EV3LargeRegulatedMotor(MotorPort.B));

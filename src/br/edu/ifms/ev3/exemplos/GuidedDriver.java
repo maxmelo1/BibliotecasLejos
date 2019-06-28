@@ -15,10 +15,10 @@ import lejos.utility.Delay;
 
 public class GuidedDriver {
 
-	private RMIRegulatedMotor me;
-	private RMIRegulatedMotor md;
+	EV3LargeRegulatedMotor me = new EV3LargeRegulatedMotor(MotorPort.A);
+	EV3LargeRegulatedMotor md = new EV3LargeRegulatedMotor(MotorPort.B);
 	
-	public GuidedDriver(RMIRegulatedMotor me, RMIRegulatedMotor md) {
+	public GuidedDriver(EV3LargeRegulatedMotor md, EV3LargeRegulatedMotor me) {
 		this.me = me;
 		this.md = md;
 		
@@ -59,18 +59,11 @@ public class GuidedDriver {
 		float i=0;	
 		
 		do{
-			
-					
-			try {
 				md.setSpeed( (int)(Math.sin(i)*300) );
 				me.setSpeed( (int)(Math.cos(i)*300) );
 				
 				md.forward();
 				me.forward();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			
 			
 			i += 0.05;
@@ -117,7 +110,6 @@ public class GuidedDriver {
 		Integer pd = new Integer(powerD.intValue());
 		Integer pe = new Integer(powerE.intValue());
 		
-		try {
 		me.setSpeed(pe);
 		md.setSpeed(pd);
 		
@@ -129,29 +121,26 @@ public class GuidedDriver {
 			me.backward();
 			md.backward();
 		}
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 		
 	}
 	
 	//public void moveAng ()
 	
 	
-	public RMIRegulatedMotor getMe() {
+	public EV3LargeRegulatedMotor getMe() {
 		return me;
 	}
 
-	public void setMe(RMIRegulatedMotor me) {
+	public void setMe(EV3LargeRegulatedMotor me) {
 		this.me = me;
 	}
 
-	public RMIRegulatedMotor getMd() {
+	public EV3LargeRegulatedMotor getMd() {
 		return md;
 	}
 
-	public void setMd(RMIRegulatedMotor md) {
+	public void setMd(EV3LargeRegulatedMotor md) {
 		this.md = md;
 	}
 

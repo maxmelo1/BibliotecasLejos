@@ -1,6 +1,6 @@
 package br.edu.ifms.ev3.exemplos;
 
-import java.rmi.RemoteException;
+//import java.rmi.RemoteException;
 
 import br.edu.ifms.ev3.exemplos.GuidedDriver;
 import br.edu.ifms.ev3.wrappers.ColorSensor;
@@ -8,24 +8,23 @@ import lejos.hardware.Button;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
-import lejos.remote.ev3.RMISampleProvider;
-import lejos.remote.ev3.RemoteEV3;
+
 
 public class PIDlinha {
 	
 	
 	public static void main (String [] args) {
-		EV3LargeRegulatedMotor me = new EV3LargeRegulatedMotor(MotorPort.A);
-		EV3LargeRegulatedMotor md = new EV3LargeRegulatedMotor(MotorPort.B);
+		//EV3LargeRegulatedMotor me = new EV3LargeRegulatedMotor(MotorPort.A);
+		//EV3LargeRegulatedMotor md = new EV3LargeRegulatedMotor(MotorPort.B);
+		GuidedDriver gd = new GuidedDriver(new EV3LargeRegulatedMotor(MotorPort.C), new EV3LargeRegulatedMotor(MotorPort.D));
 		ColorSensor CorD = new ColorSensor(SensorPort.S1);
-			
 			
 		
 		double error;
 		double media = 0.2;
 		int kp = 100, kd = 300;
 		int dir,prop;
-		double deriv, integral = 0, ki = 0.5;
+		double deriv, integral = 0, ki = 1;
 		long time;
 		long lastTime = 0;
 		double lastError = 0.0f;
@@ -33,7 +32,7 @@ public class PIDlinha {
 		
 		
 		
-		//CorD.setRedMode();
+		CorD.setRedMode();
 		while (Button.ESCAPE.isUp()) {
 			error = (CorD.getAmbient() - media); //parcela proporcional
 			prop = (int)(error * kp);
@@ -51,9 +50,11 @@ public class PIDlinha {
 		
 			
 			dir = (int)(deriv + prop + integral);//movimento
+			
+			gd.move(dir, 200f);
 			//Delay.msDelay(2000);
 			
-			if (dir >100) {
+			/*if (dir >100) {
 				dir =100;
 			}
 			if (dir>0) {
@@ -89,13 +90,13 @@ public class PIDlinha {
 				
 				md.forward();
 				me.forward();
-			}
+			}*/
 			
 		}
 		CorD.close();
 		
-		md.close();
-		me.close();
+		gd.getMd().close();
+		gd.getMe().close();
 		
 		//gd.getMd().close();
 		//gd.getMe().close();
