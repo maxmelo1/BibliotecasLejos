@@ -40,12 +40,12 @@ public class MonitorLego {
 			System.out.println("ev3 nulo? " + (ev3 == null));
 			
 			sampleProvider = ev3.createSampleProvider("S1", "lejos.hardware.sensor.EV3ColorSensor", "Red" );
-			sampleProvider2 = ev3.createSampleProvider("S2", "lejos.hardware.sensor.EV3ColorSensor", "Red" );
+			//sampleProvider2 = ev3.createSampleProvider("S2", "lejos.hardware.sensor.EV3ColorSensor", "Red" );
 			float colorE = sampleProvider.fetchSample()[0];
-			float colorD = sampleProvider2.fetchSample()[0];
+			//float colorD = sampleProvider2.fetchSample()[0];
 			
-			me = ev3.createRegulatedMotor("D", 'L');
-			md = ev3.createRegulatedMotor("C", 'L');
+			me = ev3.createRegulatedMotor("B", 'L');
+			md = ev3.createRegulatedMotor("A", 'L');
 
 			
 			this.gd = new RMIGuidedDriver(me,md);
@@ -53,7 +53,7 @@ public class MonitorLego {
 			while (Button.ESCAPE.isUp()) {
 					//pid esquerdo
 					colorE = sampleProvider.fetchSample()[0];
-					System.out.println("cor refletida: "+colorD);
+					System.out.println("cor refletida: "+colorE);
 					error = 10*(colorE - media); //parcela proporcional
 					prop = (int)(error * kp);
 				
@@ -62,9 +62,6 @@ public class MonitorLego {
 					lastTime = time;
 					lastError = error;				
 					integral = ki*(error + integral); //parcela integral
-
-			me = ev3.createRegulatedMotor("D", 'L');
-			md = ev3.createRegulatedMotor("C", 'L');
 			
 					System.out.println("int: "+integral);
 					dir = (int)(deriv + prop + integral);//movimento
