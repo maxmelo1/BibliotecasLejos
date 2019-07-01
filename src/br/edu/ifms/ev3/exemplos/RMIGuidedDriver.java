@@ -131,7 +131,45 @@ public class RMIGuidedDriver {
 		
 	}
 	
-	//public void moveAng ()
+	public void moveAng (Integer dir, Integer speed) {
+		int ang = (speed/100)*dir*2;
+		System.out.println("ang: "+ang);
+			try {
+				if (dir>0) {
+				me.setSpeed(speed);
+				md.setSpeed(speed-ang);
+				
+				if(speed-ang<0) {
+					me.forward();
+					md.backward();
+				}
+				else {
+					me.forward();
+					md.forward();
+				}
+				}
+				else {
+					me.setSpeed(speed+ang);
+					md.setSpeed(speed);
+					
+					if(speed+ang<0) {
+						md.forward();
+						me.backward();
+					}
+					else {
+						me.forward();
+						md.forward();
+					}
+				}
+				System.out.println("md: "+speed);
+				System.out.println("me: "+(speed+ang));
+				
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+	}
 	
 	
 	public RMIRegulatedMotor getMe() {
@@ -147,6 +185,7 @@ public class RMIGuidedDriver {
 	}
 
 	public void setMd(RMIRegulatedMotor md) {
+		
 		this.md = md;
 	}
 

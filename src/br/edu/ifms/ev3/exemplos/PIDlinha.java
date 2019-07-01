@@ -13,92 +13,81 @@ import lejos.remote.ev3.RemoteEV3;
 
 public class PIDlinha {
 	
+	private GuidedDriver gd;
+	private ColorSensor colorE;
+	private ColorSensor colorD;
+	
+	public PIDlinha(GuidedDriver gd,ColorSensor colorE,ColorSensor colorD) {
+		this.gd = gd;
+		this.colorD = colorD;
+		this.colorE = colorE;
+	}
+	
+	double error;
+	double media = 0.4;
+	int kp = 17, kd = 39;
+	int dir,prop;
+	double deriv, integral = 0, ki = 0.9;
+	long time;
+	long lastTime = 0;
+	double lastError = 0.0f;
+	
+	public void pidEsquerdo() {
+		colorE.setRedMode();
+		error = 10*(colorE.getAmbient() - media); //parcela proporcional
+		prop = (int)(error * kp);
+	
+		time = System.currentTimeMillis();//parcela derivativa
+		deriv = kd*(error - lastError)/(time - lastTime);
+		lastTime = time;
+		lastError = error;				
+		integral = ki*(error + integral); //parcela integral
+
+		System.out.println("int: "+integral);
+		dir = (int)(deriv + prop + integral);//movimento
+		System.out.println("dir: "+dir);
+		dir = dir< 100? dir : 100;
+		gd.moveAng(dir, 100f);
+	}
+	
+	public void pidDireito () {
+		colorD.setRedMode();
+		error = 10*(colorD.getAmbient() - media); //parcela proporcional
+		prop = (int)(error * kp);
+	
+		time = System.currentTimeMillis();//parcela derivativa
+		deriv = kd*(error - lastError)/(time - lastTime);
+		lastTime = time;
+		lastError = error;				
+		integral = ki*(error + integral); //parcela integral
+
+		System.out.println("int: "+integral);
+		dir = (int)(deriv + prop + integral);//movimento
+		System.out.println("dir: "+dir);
+		dir = dir< 100? dir : 100;
+		dir = dir * (-1);
+		gd.moveAng(dir, 100f);
+	}
+	
+	public void verDoisPretos() {
+		
+	}
+	
+	public void closeAll() {
+		colorD.close();
+		colorE.close();
+		gd.getMd().close();
+		gd.getMe().close();
+	}
 	
 	public static void main (String [] args) {
-		EV3LargeRegulatedMotor me = new EV3LargeRegulatedMotor(MotorPort.A);
-		EV3LargeRegulatedMotor md = new EV3LargeRegulatedMotor(MotorPort.B);
-		ColorSensor CorD = new ColorSensor(SensorPort.S1);
-			
-			
+		PIDlinha pid = new PIDlinha(new GuidedDriver(new EV3LargeRegulatedMotor(MotorPort.C), new EV3LargeRegulatedMotor(MotorPort.D)),
+				new ColorSensor(SensorPort.S1),new ColorSensor(SensorPort.S2));
 		
-		double error;
-		double media = 0.2;
-		int kp = 100, kd = 300;
-		int dir,prop;
-		double deriv, integral = 0, ki = 0.5;
-		long time;
-		long lastTime = 0;
-		double lastError = 0.0f;
-		int speed = 300, p;
-		
-		
-		
-		//CorD.setRedMode();
 		while (Button.ESCAPE.isUp()) {
-			error = (CorD.getAmbient() - media); //parcela proporcional
-			prop = (int)(error * kp);
-			
-			//System.out.println("erro: "+error);
-			//System.out.println("proporcional: "+prop);
-			
-			time = System.currentTimeMillis();//parcela derivativa
-			deriv = kd*(error - lastError)/(time - lastTime);
-			lastTime = time;
-			lastError = error;
-			//System.out.println("derivativo: "+deriv);
-			
-			integral = ki*(error + integral); //parcela integral
-		
-			
-			dir = (int)(deriv + prop + integral);//movimento
-			//Delay.msDelay(2000);
-			
-			if (dir >100) {
-				dir =100;
-			}
-			if (dir>0) {
-				me.setSpeed(speed);
-				p = speed -(speed / 100*(dir*2));
-				md.setSpeed(p);
-				if (p>=0) {
-					md.forward();
-					me.forward();
-				}
-				else {
-					md.backward();
-					me.forward();
-				}
-				
-			}else if (dir<0) {
-				md.setSpeed(speed);
-				p = speed -(speed / 100*(dir*2));
-				me.setSpeed(p);
-				if (p>=0) {
-					md.forward();
-					me.forward();
-				}
-				else {
-					me.backward();
-					md.forward();
-				}
-				
-			}
-			else {
-				md.setSpeed(speed);
-				me.setSpeed(speed);
-				
-				md.forward();
-				me.forward();
-			}
+			pid.pidDireito();
 			
 		}
-		CorD.close();
-		
-		md.close();
-		me.close();
-		
-		//gd.getMd().close();
-		//gd.getMe().close();
 		
 		
 		

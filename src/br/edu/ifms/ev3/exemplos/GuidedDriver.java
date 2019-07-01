@@ -1,7 +1,5 @@
 package br.edu.ifms.ev3.exemplos;
 
-import java.rmi.RemoteException;
-
 import br.edu.ifms.ev3.wrappers.TouchSensorWrapper;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
@@ -9,16 +7,15 @@ import lejos.hardware.port.SensorPort;
 
 import lejos.hardware.sensor.EV3TouchSensor;
 import lejos.hardware.sensor.SensorMode;
-import lejos.remote.ev3.RMIRegulatedMotor;
 import lejos.utility.Delay;
 
 
 public class GuidedDriver {
 
-	private RMIRegulatedMotor me;
-	private RMIRegulatedMotor md;
+	private EV3LargeRegulatedMotor me;
+	private EV3LargeRegulatedMotor md;
 	
-	public GuidedDriver(RMIRegulatedMotor me, RMIRegulatedMotor md) {
+	public GuidedDriver(EV3LargeRegulatedMotor me, EV3LargeRegulatedMotor md) {
 		this.me = me;
 		this.md = md;
 		
@@ -61,16 +58,11 @@ public class GuidedDriver {
 		do{
 			
 					
-			try {
-				md.setSpeed( (int)(Math.sin(i)*300) );
-				me.setSpeed( (int)(Math.cos(i)*300) );
-				
-				md.forward();
-				me.forward();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			md.setSpeed( (int)(Math.sin(i)*300) );
+			me.setSpeed( (int)(Math.cos(i)*300) );
+			
+			md.forward();
+			me.forward();
 			
 			
 			i += 0.05;
@@ -114,12 +106,9 @@ public class GuidedDriver {
 		powerD = powerD< 700f? powerD : 700f;
 		powerE = powerE< 700f? powerE : 700f;
 		
-		Integer pd = new Integer(powerD.intValue());
-		Integer pe = new Integer(powerE.intValue());
 		
-		try {
-		me.setSpeed(pe);
-		md.setSpeed(pd);
+		me.setSpeed(powerE);
+		md.setSpeed(powerD);
 		
 		if(power>=0) {
 			me.forward();
@@ -129,29 +118,56 @@ public class GuidedDriver {
 			me.backward();
 			md.backward();
 		}
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 	}
 	
-	//public void moveAng ()
+	public void moveAng (Integer dir, Float speed) {
+		Float ang = (speed/100)*dir*2;
+		
+		if (dir>0) {
+			me.setSpeed(speed);
+			md.setSpeed(speed-ang);
+			
+			if(speed-ang<0) {
+				me.forward();
+				md.backward();
+			}
+			else {
+				me.forward();
+				md.forward();
+			}
+			}
+			else {
+				me.setSpeed(speed+ang);
+				md.setSpeed(speed);
+				
+				if(speed+ang<0) {
+					md.forward();
+					me.backward();
+				}
+				else {
+					me.forward();
+					md.forward();
+				}
+			}
+	}
 	
 	
-	public RMIRegulatedMotor getMe() {
+	
+	
+	public EV3LargeRegulatedMotor getMe() {
 		return me;
 	}
 
-	public void setMe(RMIRegulatedMotor me) {
+	public void setMe(EV3LargeRegulatedMotor me) {
 		this.me = me;
 	}
 
-	public RMIRegulatedMotor getMd() {
+	public EV3LargeRegulatedMotor getMd() {
 		return md;
 	}
 
-	public void setMd(RMIRegulatedMotor md) {
+	public void setMd(EV3LargeRegulatedMotor md) {
 		this.md = md;
 	}
 
