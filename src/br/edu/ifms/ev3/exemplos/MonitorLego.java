@@ -9,6 +9,7 @@ import lejos.hardware.Button;
 import lejos.remote.ev3.RMIRegulatedMotor;
 import lejos.remote.ev3.RMISampleProvider;
 import lejos.remote.ev3.RemoteEV3;
+//import lejos.utility.Delay;
 
 public class MonitorLego {
 	
@@ -18,6 +19,7 @@ public class MonitorLego {
 	private RMIRegulatedMotor me;
 	private RMIRegulatedMotor md;
 	private RMIGuidedDriver gd;
+
 	
 	double error;
 	double media = 0.4;
@@ -27,7 +29,9 @@ public class MonitorLego {
 	long time;
 	long lastTime = 0;
 	double lastError = 0.0f;
+
 	
+
 	public MonitorLego() {
 		
 		try {
@@ -42,8 +46,9 @@ public class MonitorLego {
 			
 			me = ev3.createRegulatedMotor("D", 'L');
 			md = ev3.createRegulatedMotor("C", 'L');
+
 			
-			gd = new RMIGuidedDriver(me,md);
+			this.gd = new RMIGuidedDriver(me,md);
 				
 			while (Button.ESCAPE.isUp()) {
 					//pid esquerdo
@@ -57,17 +62,20 @@ public class MonitorLego {
 					lastTime = time;
 					lastError = error;				
 					integral = ki*(error + integral); //parcela integral
+
+			me = ev3.createRegulatedMotor("D", 'L');
+			md = ev3.createRegulatedMotor("C", 'L');
 			
 					System.out.println("int: "+integral);
 					dir = (int)(deriv + prop + integral);//movimento
 					System.out.println("dir: "+dir);
 					dir = dir< 100? dir : 100;
 					gd.moveAng(dir, 100);
-				
-			}
+
+			}	
 			me.stop(true);
 			me.stop(true);
-					
+			
 		} catch (RemoteException | MalformedURLException | NotBoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -87,6 +95,7 @@ public class MonitorLego {
 		}	
 	}
 	
+
 	public static void main(String[] args) {
 		new MonitorLego();
 	}

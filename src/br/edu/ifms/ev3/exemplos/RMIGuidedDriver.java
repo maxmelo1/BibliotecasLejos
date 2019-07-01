@@ -70,7 +70,7 @@ public class RMIGuidedDriver {
 			
 			i += 0.05;
 			
-			Delay.msDelay(60);
+			Delay.msDelay(30);
 			
 			if( i > Math.PI  ) {
 				i = (float) -Math.PI;
@@ -100,7 +100,7 @@ public class RMIGuidedDriver {
 			ratioE = 1 - ratioD;
 		}*/
 		
-		ratioD = -0.005f*dir + 0.5f;
+		ratioD = -0.005f*dir +0.5f;
 		ratioE = 1-ratioD;
 		
 		powerD = power*ratioD;
@@ -113,6 +113,8 @@ public class RMIGuidedDriver {
 		Integer pe = new Integer(powerE.intValue());
 		
 		try {
+			System.out.println("valor de pe: " + pe);
+			System.out.println("valor de pd: " + pd);
 		me.setSpeed(pe);
 		md.setSpeed(pd);
 		
@@ -124,6 +126,7 @@ public class RMIGuidedDriver {
 			me.backward();
 			md.backward();
 		}
+		Delay.msDelay(500);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -188,6 +191,7 @@ public class RMIGuidedDriver {
 		
 		this.md = md;
 	}
+	
 
 	public static void main(String[] args) {
 		//GuidedDriver gd = new GuidedDriver(new EV3LargeRegulatedMotor(MotorPort.A), new EV3LargeRegulatedMotor(MotorPort.B));

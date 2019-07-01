@@ -2,11 +2,11 @@ package br.edu.ifms.ev3.exemplos;
 
 import br.edu.ifms.ev3.wrappers.TouchSensorWrapper;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.port.MotorPort;
+//import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 
-import lejos.hardware.sensor.EV3TouchSensor;
-import lejos.hardware.sensor.SensorMode;
+//import lejos.hardware.sensor.EV3TouchSensor;
+//import lejos.hardware.sensor.SensorMode;
 import lejos.utility.Delay;
 
 
@@ -14,8 +14,9 @@ public class GuidedDriver {
 
 	private EV3LargeRegulatedMotor me;
 	private EV3LargeRegulatedMotor md;
-	
-	public GuidedDriver(EV3LargeRegulatedMotor me, EV3LargeRegulatedMotor md) {
+
+	public GuidedDriver(EV3LargeRegulatedMotor md, EV3LargeRegulatedMotor me) {
+
 		this.me = me;
 		this.md = md;
 		
@@ -56,6 +57,7 @@ public class GuidedDriver {
 		float i=0;	
 		
 		do{
+
 			
 					
 			md.setSpeed( (int)(Math.sin(i)*300) );
@@ -63,7 +65,11 @@ public class GuidedDriver {
 			
 			md.forward();
 			me.forward();
-			
+				md.setSpeed( (int)(Math.sin(i)*300) );
+				me.setSpeed( (int)(Math.cos(i)*300) );
+				
+				md.forward();
+				me.forward();			
 			
 			i += 0.05;
 			
@@ -110,6 +116,7 @@ public class GuidedDriver {
 		me.setSpeed(powerE);
 		md.setSpeed(powerD);
 		
+		
 		if(power>=0) {
 			me.forward();
 			md.forward();
@@ -118,7 +125,7 @@ public class GuidedDriver {
 			me.backward();
 			md.backward();
 		}
-		
+	
 	}
 	
 	public void moveAng (Integer dir, Float speed) {
@@ -151,9 +158,6 @@ public class GuidedDriver {
 				}
 			}
 	}
-	
-	
-	
 	
 	public EV3LargeRegulatedMotor getMe() {
 		return me;

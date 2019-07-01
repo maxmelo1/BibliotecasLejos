@@ -1,6 +1,6 @@
 package br.edu.ifms.ev3.exemplos;
 
-import java.rmi.RemoteException;
+//import java.rmi.RemoteException;
 
 import br.edu.ifms.ev3.exemplos.GuidedDriver;
 import br.edu.ifms.ev3.wrappers.ColorSensor;
@@ -8,8 +8,7 @@ import lejos.hardware.Button;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
-import lejos.remote.ev3.RMISampleProvider;
-import lejos.remote.ev3.RemoteEV3;
+
 
 public class PIDlinha {
 	
@@ -81,13 +80,19 @@ public class PIDlinha {
 	}
 	
 	public static void main (String [] args) {
+
 		PIDlinha pid = new PIDlinha(new GuidedDriver(new EV3LargeRegulatedMotor(MotorPort.C), new EV3LargeRegulatedMotor(MotorPort.D)),
 				new ColorSensor(SensorPort.S1),new ColorSensor(SensorPort.S2));
 		
+		
 		while (Button.ESCAPE.isUp()) {
+
 			pid.pidDireito();
+
 			
 		}
+
+		pid.closeAll();
 		
 		
 		
