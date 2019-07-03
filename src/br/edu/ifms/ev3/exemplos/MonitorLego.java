@@ -9,6 +9,7 @@ import lejos.hardware.Button;
 import lejos.remote.ev3.RMIRegulatedMotor;
 import lejos.remote.ev3.RMISampleProvider;
 import lejos.remote.ev3.RemoteEV3;
+import lejos.utility.Delay;
 //import lejos.utility.Delay;
 
 public class MonitorLego {
@@ -28,7 +29,7 @@ public class MonitorLego {
 	double deriv, integral = 0, ki = 0.9;
 	long time;
 	long lastTime = 0;
-	double lastError = 0.0f;
+	double lastError = 0.0;
 
 	
 
@@ -40,9 +41,15 @@ public class MonitorLego {
 			System.out.println("ev3 nulo? " + (ev3 == null));
 			
 			sampleProvider = ev3.createSampleProvider("S1", "lejos.hardware.sensor.EV3ColorSensor", "Red" );
-			//sampleProvider2 = ev3.createSampleProvider("S2", "lejos.hardware.sensor.EV3ColorSensor", "Red" );
+			sampleProvider2 = ev3.createSampleProvider("S2", "lejos.hardware.sensor.EV3ColorSensor", "Red" );
+			if (sampleProvider == null) {
+				System.out.println("bbbb");
+			}
+			if (sampleProvider2 == null) {
+				System.out.println("aaaa");
+			}
 			float colorE = sampleProvider.fetchSample()[0];
-			//float colorD = sampleProvider2.fetchSample()[0];
+			float colorD = sampleProvider2.fetchSample()[0];
 			
 			me = ev3.createRegulatedMotor("B", 'L');
 			md = ev3.createRegulatedMotor("A", 'L');
@@ -51,6 +58,8 @@ public class MonitorLego {
 			this.gd = new RMIGuidedDriver(me,md);
 				
 			while (Button.ESCAPE.isUp()) {
+				
+				if (integral> -20 && colorD>0.5) {
 					//pid esquerdo
 					colorE = sampleProvider.fetchSample()[0];
 					System.out.println("cor refletida: "+colorE);
@@ -68,10 +77,36 @@ public class MonitorLego {
 					System.out.println("dir: "+dir);
 					dir = dir< 100? dir : 100;
 					gd.moveAng(dir, 100);
+				}
+				if (colorD<0.5 && integral<-20) {
+					gd.moveAng(0, 100);
+					Delay.msDelay(800);
+					
+				}
+				else if (colorD< 0.5 && integral>-20) {
+					//pid direito
+					colorD = sampleProvider2.fetchSample()[0];
+					System.out.println("cor refletida: "+colorD);
+					error = 10*(colorD - media); //parcela proporcional
+					prop = (int)(error * kp);
+				
+					time = System.currentTimeMillis();//parcela derivativa
+					deriv = kd*(error - lastError)/(time - lastTime);
+					lastTime = time;
+					lastError = error;
+					integral = ki*(error + integral); //parcela integral
+			
+					System.out.println("int: "+integral);
+					dir = (int)(deriv + prop + integral);//movimento
+					System.out.println("dir: "+dir);
+					dir = dir< 100? dir : 100;
+					dir = dir *(-1);
+					gd.moveAng(dir, 200);
+				}
 
-			}	
-			me.stop(true);
-			me.stop(true);
+			}
+			gd.getMd().stop(true);
+			gd.getMe().stop(true);
 			
 		} catch (RemoteException | MalformedURLException | NotBoundException e) {
 			// TODO Auto-generated catch block
@@ -80,9 +115,9 @@ public class MonitorLego {
 		finally {
 			try {
 				sampleProvider.close();
-				
-				me.close();
-				md.close();
+				sampleProvider2.close();
+				gd.getMd().close();
+				gd.getMe().close();
 				
 				
 			} catch (RemoteException e) {
