@@ -23,7 +23,7 @@ public class MonitorLego {
 
 	
 	double error;
-	double media = 0.4;
+	double media = 0.45;
 	int kp = 17, kd = 39;
 	int dir,prop;
 	double deriv, integral = 0, ki = 0.9;
@@ -40,8 +40,8 @@ public class MonitorLego {
 			
 			System.out.println("ev3 nulo? " + (ev3 == null));
 			
-			sampleProvider = ev3.createSampleProvider("S1", "lejos.hardware.sensor.EV3ColorSensor", "Red" );
-			sampleProvider2 = ev3.createSampleProvider("S2", "lejos.hardware.sensor.EV3ColorSensor", "Red" );
+			sampleProvider = ev3.createSampleProvider("S3", "lejos.hardware.sensor.EV3ColorSensor", "Red" );
+			sampleProvider2 = ev3.createSampleProvider("S1", "lejos.hardware.sensor.EV3ColorSensor", "Red" );
 			if (sampleProvider == null) {
 				System.out.println("bbbb");
 			}
@@ -56,54 +56,72 @@ public class MonitorLego {
 
 			
 			this.gd = new RMIGuidedDriver(me,md);
-				
-			while (Button.ESCAPE.isUp()) {
-				
-				if (integral> -20 && colorD>0.5) {
-					//pid esquerdo
-					colorE = sampleProvider.fetchSample()[0];
-					System.out.println("cor refletida: "+colorE);
-					error = 10*(colorE - media); //parcela proporcional
-					prop = (int)(error * kp);
-				
-					time = System.currentTimeMillis();//parcela derivativa
-					deriv = kd*(error - lastError)/(time - lastTime);
-					lastTime = time;
-					lastError = error;				
-					integral = ki*(error + integral); //parcela integral
 			
-					System.out.println("int: "+integral);
-					dir = (int)(deriv + prop + integral);//movimento
-					System.out.println("dir: "+dir);
-					dir = dir< 100? dir : 100;
-					gd.moveAng(dir, 100);
-				}
-				if (colorD<0.5 && integral<-20) {
-					gd.moveAng(0, 100);
-					Delay.msDelay(800);
+			while ( Button.ESCAPE.isUp()) {
+				colorD = sampleProvider2.fetchSample()[0];
+				System.out.println("sensor direito: "+ colorD);
+				colorE = sampleProvider.fetchSample()[0];
+				System.out.println("sensor esquerdo: "+ colorE);
+				
+				if (colorE<0.4) {
+					if (colorD<0.4) {
+						System.out.println("dois brancos");
+						gd.moveAng(0, 100);
+					}
+					else {
+						integral=0;
+						//pid direito
+						while (colorD>=0.4 || integral<26) {
+							colorD = sampleProvider2.fetchSample()[0];
+							System.out.println("reflexao: "+ colorD);
+							System.out.println("to no pid direito");
+							error = 10*(media-colorD); //parcela proporcional
+							prop = (int)(error * kp);
 					
-				}
-				else if (colorD< 0.5 && integral>-20) {
-					//pid direito
-					colorD = sampleProvider2.fetchSample()[0];
-					System.out.println("cor refletida: "+colorD);
-					error = 10*(colorD - media); //parcela proporcional
-					prop = (int)(error * kp);
+							time = System.currentTimeMillis();//parcela derivativa
+							deriv = kd*(error - lastError)/(time - lastTime);
+							lastTime = time;
+							lastError = error;
+							integral = ki*(error + integral); //parcela integral
 				
-					time = System.currentTimeMillis();//parcela derivativa
-					deriv = kd*(error - lastError)/(time - lastTime);
-					lastTime = time;
-					lastError = error;
-					integral = ki*(error + integral); //parcela integral
-			
-					System.out.println("int: "+integral);
-					dir = (int)(deriv + prop + integral);//movimento
-					System.out.println("dir: "+dir);
-					dir = dir< 100? dir : 100;
-					dir = dir *(-1);
-					gd.moveAng(dir, 200);
-				}
+							System.out.println("int: "+integral);
+							dir = (int)(deriv + prop + integral);//movimento
+							System.out.println("dir: "+dir);
+							dir = dir< 100? dir : 100;
+							gd.moveAng(dir, 100);
+						}
 
+					}	
+				}
+				else {
+					if (colorD<0.4) {
+					integral =0;
+					//pid esquerdo
+					while (colorE>=0.4 || integral>-26) {
+						colorE = sampleProvider.fetchSample()[0];
+						System.out.println("reflexao: "+colorE);
+						System.out.println("to no pid esquerdo");
+						error = 10*(colorE - media); //parcela proporcional
+						prop = (int)(error * kp);
+						time = System.currentTimeMillis();//parcela derivativa
+						deriv = kd*(error - lastError)/(time - lastTime);
+						integral = ki*(error + integral); //parcela integral							
+						System.out.println("int: "+integral);
+						dir = (int)(deriv + prop + integral);//movimento
+						System.out.println("dir: "+dir);
+						dir = dir< 100? dir : 100;
+	
+						gd.moveAng(dir, 100);
+						lastTime = time;
+						lastError = error;
+					}
+				}
+					else {
+						gd.moveAng(0, 100);
+						
+					}
+				}
+						
 			}
 			gd.getMd().stop(true);
 			gd.getMe().stop(true);

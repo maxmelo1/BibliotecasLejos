@@ -25,7 +25,7 @@ public class LeituraSensorCor {
         
         
         //será deus????
-        //color.setAmbientMode();
+        color.setAmbientMode();
         
         Delay.msDelay(250);
         
