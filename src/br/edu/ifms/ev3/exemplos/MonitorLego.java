@@ -91,10 +91,10 @@ public class MonitorLego {
 							gd.moveAng(dir, 100);
 						}
 
-					}	
+					}
 				}
 				else {
-					if (colorD<0.4) {
+					//if (colorD<0.4) {
 					integral =0;
 					//pid esquerdo
 					while (colorE>=0.4 || integral>-26) {
@@ -114,12 +114,8 @@ public class MonitorLego {
 						gd.moveAng(dir, 100);
 						lastTime = time;
 						lastError = error;
-					}
+					//}
 				}
-					else {
-						gd.moveAng(0, 100);
-						
-					}
 				}
 						
 			}
