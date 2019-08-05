@@ -26,11 +26,11 @@ public class GuidedDriver {
 	}
 	
 	public void zigzagNavigate() {
-		TouchSensorWrapper touchSensor = new TouchSensorWrapper(SensorPort.S2);
+		//TouchSensorWrapper touchSensor = new TouchSensorWrapper(SensorPort.S2);
 		
 		float i=0;
 		
-		do{
+		//do{
 			
 			
 			int k = 90;
@@ -46,8 +46,8 @@ public class GuidedDriver {
 			if( i > Math.PI  ) {
 				i = (float) -Math.PI;
 			}
-		}
-		while(! touchSensor.isPressed() );
+		//}
+		//while(! touchSensor.isPressed() );
 	}
 	
 	
