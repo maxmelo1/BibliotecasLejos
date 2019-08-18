@@ -23,14 +23,14 @@ public class MonitorLego {
 
 	
 	double error;
-	double media = 0.45;
+	double media = 0.33;
 	int kp = 17, kd = 39;
-	int dir,prop;
+	int dir,prop,x,a=0;
 	double deriv, integral = 0, ki = 0.9;
 	long time;
 	long lastTime = 0;
 	double lastError = 0.0;
-
+	int speed = 200, curva = 0;
 	
 
 	public MonitorLego() {
@@ -39,17 +39,11 @@ public class MonitorLego {
 			ev3 = new RemoteEV3("10.0.1.1");
 			
 			System.out.println("ev3 nulo? " + (ev3 == null));
-			
-			sampleProvider = ev3.createSampleProvider("S3", "lejos.hardware.sensor.EV3ColorSensor", "Red" );
-			sampleProvider2 = ev3.createSampleProvider("S1", "lejos.hardware.sensor.EV3ColorSensor", "Red" );
-			if (sampleProvider == null) {
-				System.out.println("bbbb");
-			}
-			if (sampleProvider2 == null) {
-				System.out.println("aaaa");
-			}
-			float colorE = sampleProvider.fetchSample()[0];
-			float colorD = sampleProvider2.fetchSample()[0];
+			sampleProvider 	= ev3.createSampleProvider("S2", "lejos.hardware.sensor.EV3ColorSensor", "Red");
+			sampleProvider2 = ev3.createSampleProvider("S1", "lejos.hardware.sensor.EV3ColorSensor", "Red");
+
+			float corE = sampleProvider.fetchSample()[0];
+			float corD = sampleProvider2.fetchSample()[0];
 			
 			me = ev3.createRegulatedMotor("B", 'L');
 			md = ev3.createRegulatedMotor("A", 'L');
@@ -57,68 +51,59 @@ public class MonitorLego {
 			
 			this.gd = new RMIGuidedDriver(me,md);
 			
-			while ( Button.ESCAPE.isUp()) {
-				colorD = sampleProvider2.fetchSample()[0];
-				System.out.println("sensor direito: "+ colorD);
-				colorE = sampleProvider.fetchSample()[0];
-				System.out.println("sensor esquerdo: "+ colorE);
+			while (Button.ESCAPE.isUp()) {
+				corD = sampleProvider2.fetchSample()[0];
+				corE = sampleProvider.fetchSample()[0];
+				System.out.println("cor direita: " + corD);
+				System.out.println("cor esquerda: " + corE);
 				
-				if (colorE<0.4) {
-					if (colorD<0.4) {
-						System.out.println("dois brancos");
-						gd.moveAng(0, 100);
+				if (corE<=0.12) {
+					curva = 1;
+					System.out.println("to na curva");
+				}
+				if (corD>0.7) {
+					if (curva ==1) {
+						while (corE>0.5) {
+							corE = sampleProvider.fetchSample()[0];
+							System.out.println("cor esquerda: " + corE);
+							gd.moveAng(-100, speed);
+						}
+						curva = 0;
 					}
 					else {
-						integral=0;
-						//pid direito
-						while (colorD>=0.4 || integral<26) {
-							colorD = sampleProvider2.fetchSample()[0];
-							System.out.println("reflexao: "+ colorD);
-							System.out.println("to no pid direito");
-							error = 10*(media-colorD); //parcela proporcional
+						while (corD>0.75) {
+							corD = sampleProvider2.fetchSample()[0];
+							System.out.println("cor direita: " + corD);
+							gd.moveAng(0, speed);
+						}
+						
+					}
+				}
+	
+					 
+							
+							
+							error = 10*(corD - media); //parcela proporcional
 							prop = (int)(error * kp);
-					
+			
 							time = System.currentTimeMillis();//parcela derivativa
 							deriv = kd*(error - lastError)/(time - lastTime);
 							lastTime = time;
 							lastError = error;
 							integral = ki*(error + integral); //parcela integral
-				
+
 							System.out.println("int: "+integral);
 							dir = (int)(deriv + prop + integral);//movimento
 							System.out.println("dir: "+dir);
 							dir = dir< 100? dir : 100;
+							dir = dir * (-1);
 							gd.moveAng(dir, 100);
-						}
-
-					}
-				}
-				else {
-					//if (colorD<0.4) {
-					integral =0;
-					//pid esquerdo
-					while (colorE>=0.4 || integral>-26) {
-						colorE = sampleProvider.fetchSample()[0];
-						System.out.println("reflexao: "+colorE);
-						System.out.println("to no pid esquerdo");
-						error = 10*(colorE - media); //parcela proporcional
-						prop = (int)(error * kp);
-						time = System.currentTimeMillis();//parcela derivativa
-						deriv = kd*(error - lastError)/(time - lastTime);
-						integral = ki*(error + integral); //parcela integral							
-						System.out.println("int: "+integral);
-						dir = (int)(deriv + prop + integral);//movimento
-						System.out.println("dir: "+dir);
-						dir = dir< 100? dir : 100;
-	
-						gd.moveAng(dir, 100);
-						lastTime = time;
-						lastError = error;
-					//}
-				}
-				}
 						
+						
+				
 			}
+			
+			
 			gd.getMd().stop(true);
 			gd.getMe().stop(true);
 			

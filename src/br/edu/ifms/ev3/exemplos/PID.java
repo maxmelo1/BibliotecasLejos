@@ -1,25 +1,28 @@
 package br.edu.ifms.ev3.exemplos;
 
 import br.edu.ifms.ev3.wrappers.ColorSensor;
+import br.edu.ifms.ev3.wrappers.GyroSensor;
 import br.edu.ifms.ev3.wrappers.UltraSonicSensor;
 import lejos.hardware.Button;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
+import lejos.robotics.Color;
 import lejos.utility.Delay;
 
 public class PID {
 	public static void main (String [] args) {
-		GuidedDriver gd = new GuidedDriver(new EV3LargeRegulatedMotor(MotorPort.A), new EV3LargeRegulatedMotor(MotorPort.B));
-		UltraSonicSensor uss = new UltraSonicSensor(SensorPort.S3);
+		GuidedDriver gd = new GuidedDriver(new EV3LargeRegulatedMotor(MotorPort.C), new EV3LargeRegulatedMotor(MotorPort.D));
+		UltraSonicSensor uss = new UltraSonicSensor(SensorPort.S4);
 		ColorSensor  colorD = new ColorSensor(SensorPort.S1);
 		ColorSensor  colorE = new ColorSensor(SensorPort.S2);
-		
+		UltraSonicSensor ussl = new UltraSonicSensor(SensorPort.S3);
+
 		double error;
 		double media = 0.45;
 		double corD, corE;
 		// 17 39 0
-		int kp = 18, kd = 43, aux= 0;
+		int kp = 18, kd = 43;
 		int dir,prop;
 		double deriv, integral = 0, ki = 0.9;
 		long time;
@@ -27,15 +30,100 @@ public class PID {
 		double lastError = 0.0f;
 		float speed=100, range;
 		
+		// variaveis de controle 
+		
 		while (Button.ESCAPE.isUp()) {
 			range = uss.getRange();
-			if (range<.10) {
-				gd.getMd().rotate(360, true);
-				gd.getMe().rotate(-360, true);
+			/*if (gyro.getAngle()>10) {
+				speed= 400;
+				colorD.setRedMode();
+				colorE.setRedMode();
+				corE = colorE.getAmbient();
+				corD = colorD.getAmbient();
 				
-				gd.getMd().rotate(360, true);
-				gd.getMe().rotate(360, true);
-			}
+				if ((corD>0.65 && corE>0.8) || (corD>0.8 && corE>0.6)) {
+					while ((corD>0.6 && corE>0.6) && range>0.05) {
+						range = uss.getRange();
+						colorD.setRedMode();
+						colorE.setRedMode();
+						corD = colorD.getAmbient();
+						corE = colorE.getAmbient();
+						gd.moveAng(0, speed);
+						
+					}
+				}
+				
+				//parte de dois pretos 
+				else if (corD<0.3 && corE<0.33) {
+					while ((corD<0.2 || corE<0.2)&& range>.15) {
+						colorD.setRedMode();
+						colorE.setRedMode();
+						corD = colorD.getAmbient();
+						corE = colorE.getAmbient();
+						range = uss.getRange();
+						gd.moveAng(0, speed);
+					}
+					}
+				colorD.setRedMode();
+				colorE.setRedMode();
+				corD = colorD.getAmbient();
+				corE = colorE.getAmbient();
+				range = uss.getRange();
+				
+				error = 10*(corD - media); //parcela proporcional
+				prop = (int)(error * kp);
+
+				time = System.currentTimeMillis();//parcela derivativa
+				deriv = kd*(error - lastError)/(time - lastTime);
+				lastTime = time;
+				lastError = error;				
+				integral = ki*(error + integral); //parcela integral
+
+				System.out.println("int: "+integral);
+				dir = (int)(deriv + prop + integral);//movimento
+				System.out.println("dir: "+dir);
+				dir = dir< 100? dir : 100;
+				dir= dir*(-1);
+				gd.moveAng(dir, 150f);
+				}*/
+			System.out.println("distancia: " + range);
+			if (range<=0.04) {
+				gd.getMd().setSpeed(200);
+				gd.getMe().setSpeed(200);
+				
+				
+				gd.getMd().rotate(-400, true);
+				gd.getMe().rotate(480);
+				while (gd.getMe().isMoving());
+				
+				gd.getMe().rotate(300, true);
+				gd.getMd().rotate(300);
+				while (gd.getMe().isMoving());
+				
+				gd.getMd().rotate(900, true);
+				gd.getMe().stop();
+				while (gd.getMd().isMoving());
+				
+				gd.getMd().rotate(480, true);
+				gd.getMe().rotate(480);
+				while (gd.getMe().isMoving());
+				
+				gd.getMd().rotate(900, true);
+				gd.getMe().stop();
+				while (gd.getMd().isMoving());
+				
+				gd.getMd().rotate(300, true);
+				gd.getMe().rotate(300);
+				while (gd.getMe().isMoving());
+				
+				gd.getMd().rotate(-400, true);
+				gd.getMe().rotate(480);
+				while (gd.getMe().isMoving());
+
+			}               
+			/*else if (gyro.getAngle()<-10) {
+				speed = 300;
+			}*/
 			else {
 			colorD.setRedMode();
 			colorE.setRedMode();
@@ -43,9 +131,9 @@ public class PID {
 			corD = colorD.getAmbient();
 			range = uss.getRange();
 			
-			// gap nao deu certo
-			if (corD>0.75 && corE>0.8) {
-				while ((corD>0.6 && corE>0.6) && range>.15) {
+			// gap
+			if ((corD>0.65 && corE>0.8) || (corD>0.8 && corE>0.6)) {
+				while ((corD>0.6 && corE>0.6) && range>0.04) {
 					range = uss.getRange();
 					colorD.setRedMode();
 					colorE.setRedMode();
@@ -55,21 +143,64 @@ public class PID {
 				}
 			}
 			
-			//curva com verde para a esquerda 
-			else if (corE<0.25) {
+			//parte de dois pretos 
+			else if (corD<0.3 && corE<0.33) {
+				colorD.setColorIdMode();
 				colorE.setColorIdMode();
-				if (colorE.getColorID() == 1) {
-					integral=0;
-					while (integral>-3 && range>.15) {
+				System.out.println(colorE.getColorID() + "  "+ colorD.getColorID());
+				if (colorE.getColorID() == 2 && colorD.getColorID() == 1) {
+						Button.LEDPattern(4);
+						gd.getMd().setSpeed(200);
+						gd.getMe().setSpeed(200);
+						
+						gd.getMd().rotate(-400, true);
+						gd.getMe().rotate(480);
+						while (gd.getMe().isMoving());
+						gd.getMd().rotate(-400, true);
+						gd.getMe().rotate(480);
+						while (gd.getMe().isMoving());
+												
+					while (corD>0.5) {
+						gd.moveAng(100, speed);
+						colorD.setRedMode();
 						colorE.setRedMode();
+						corD = colorD.getAmbient();
 						corE = colorE.getAmbient();
+					}
+				}
+				else {
+				while ((corD<0.4 && corE<0.4)&& range>.04) {
+					colorD.setRedMode();
+					colorE.setRedMode();
+					corD = colorD.getAmbient();
+					corE = colorE.getAmbient();
+					range = uss.getRange();
+					gd.moveAng(0, speed);
+				}
+				}
+			}
+			
+			//curva com verde para a esquerda 
+			else if (corE<=0.26) {
+				colorE.setColorIdMode();
+
+		        
+				if (colorE.getColorID() == 2) { 
+					integral=0;
+					while ((corD<0.75 || corE>0.35) && range>=0.04) {
+						range = uss.getRange();
+						colorD.setRedMode();
+						colorE.setRedMode();
+						corD = colorD.getAmbient();
+						corE = colorE.getAmbient();
+
 						error = 10*(corE - media); //parcela proporcional
 						prop = (int)(error * kp);
 						
 						time = System.currentTimeMillis();//parcela derivativa
 						deriv = kd*(error - lastError)/(time - lastTime);
 						lastTime = time;
-						lastError = error;				
+						lastError = error;
 						integral = ki*(error + integral); //parcela integral
 
 						System.out.println("int: "+integral);
@@ -81,8 +212,11 @@ public class PID {
 				}
 				//curva sem verde para a esquerda  
 				else {
-				integral = 0;
-				while (corD>0.6 && range>.15) {
+				integral = -1;
+				while ((corD>0.5 && corE<0.5 )&& range>0.04) {
+				range = uss.getRange();
+				colorE.setRedMode();
+				corE = colorE.getAmbient();
 				colorD.setRedMode();
 				corD = colorD.getAmbient();
 				
@@ -106,21 +240,27 @@ public class PID {
 			}
 			
 			// curva com verde para a direita
-			else if (corD<0.25) {
+			else if (corD<=0.3) {
 				colorD.setColorIdMode();
+
+		       
+		        
 				if (colorD.getColorID() == 1) {
 					integral = 0;
-					while (integral<3 && range>.15) {
+					while ((corE<0.75 || corD>0.35)&& range>=.04) {
+					range = uss.getRange();
+					colorE.setRedMode();
 					colorD.setRedMode();
+					corE = colorE.getAmbient();
 					corD = colorD.getAmbient();
-					
+
 					error = 10*(corD - media); //parcela proporcional
 					prop = (int)(error * kp);
 
 					time = System.currentTimeMillis();//parcela derivativa
 					deriv = kd*(error - lastError)/(time - lastTime);
 					lastTime = time;
-					lastError = error;				
+					lastError = error;			
 					integral = ki*(error + integral); //parcela integral
 
 					System.out.println("int: "+integral);
@@ -133,10 +273,14 @@ public class PID {
 				}
 				//curva sem verde para a direita 
 				else {
-				integral = 0;
-				while (corE>0.6 && range>.15) {
+				integral = -1;
+				while (corE>0.55 && corD<0.4 && range>=.04) {
+					range = uss.getRange();
 					colorE.setRedMode();
+					colorD.setRedMode();
+					corD = colorD.getAmbient();
 					corE = colorE.getAmbient();
+					
 					error = 10*(corE - media); //parcela proporcional
 					prop = (int)(error * kp);
 					
@@ -156,34 +300,17 @@ public class PID {
 				
 			}
 			
-			//parte de dois pretos 
-			else if (corD<0.3 && corE<0.3) {
-				colorD.setColorIdMode();
-				colorE.setColorIdMode();
-				if (colorE.getColorID() == 1 && colorD.getColorID() == 1) {
-					gd.getMd().rotate(180,true);
-					gd.getMe().rotate(180, true);
-					gd.getMe().rotate(720, true);
-					gd.getMd().rotate(-720,true);
-				}
-				else {
-				while ((corD<0.35 && corE<0.35)&& range>.15) {
-					colorD.setRedMode();
-					colorE.setRedMode();
-					corD = colorD.getAmbient();
-					corE = colorE.getAmbient();
-					gd.moveAng(0, speed);
-				}
-				}
-			}
+		
 			// segue linha normal com pid direito
 			else {
 				integral = 0;
-				while ((corD>0.3 && corE>0.3) && (corD<0.65||corE<0.65) && range>.15) {
+				while ((corD>0.3 && corE>0.26) && (corD<0.7||corE<0.7) && range>=.04) {
 				colorD.setRedMode();
 				colorE.setRedMode();
 				corD = colorD.getAmbient();
 				corE = colorE.getAmbient();
+				range = uss.getRange();
+				
 				error = 10*(corD - media); //parcela proporcional
 				prop = (int)(error * kp);
 
@@ -198,17 +325,18 @@ public class PID {
 				System.out.println("dir: "+dir);
 				dir = dir< 100? dir : 100;
 				dir= dir*(-1);
-				gd.moveAng(dir, speed);
+				gd.moveAng(dir, 150f);
 				}
 			}
-					 
-			}
+			}		 
+			
 		}
 		gd.getMe().close();
 		gd.getMd().close();
 		colorD.close();
 		colorE.close();
 		uss.close();	
+		ussl.close();
 	}
 	}
 

@@ -148,7 +148,7 @@ public class GuidedDriver {
 				me.setSpeed(speed+ang);
 				md.setSpeed(speed);
 				
-				if(speed+ang<0) {
+				if((speed+ang)<0) {
 					md.forward();
 					me.backward();
 				}
