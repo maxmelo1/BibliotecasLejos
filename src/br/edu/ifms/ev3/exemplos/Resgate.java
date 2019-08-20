@@ -4,6 +4,7 @@ import br.edu.ifms.ev3.wrappers.UltraSonicSensor;
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.utility.Delay;
@@ -12,28 +13,72 @@ public class Resgate {
 	public static void main(String[] args){
 		EV3LargeRegulatedMotor md = new EV3LargeRegulatedMotor(MotorPort.C);
 		EV3LargeRegulatedMotor me = new EV3LargeRegulatedMotor(MotorPort.D);
+		EV3MediumRegulatedMotor mm = new EV3MediumRegulatedMotor(MotorPort.B);
 		EV3LargeRegulatedMotor mg = new EV3LargeRegulatedMotor(MotorPort.A);
 		UltraSonicSensor uss = new UltraSonicSensor(SensorPort.S4);
 		
 		int x;
 		
 		//abre a garra 
-		mg.setSpeed(100);
+		mg.setSpeed(250);
 		mg.backward();
 		Delay.msDelay(1000);
 		while (mg.isMoving());
+		md.setSpeed(300);
+		me.setSpeed(300);
+		
 		
 		//procura a area segura 
-		md.setSpeed(200);
-		me.setSpeed(200);
-		me.forward();
-		Delay.msDelay(200);
-		me.stop();
+		
+		
 		float range = uss.getRange();
 		
 		while (Button.ESCAPE.isUp()) {
 			x=0;
 			// espalha as bolinhas
+			me.rotate(-60, true);
+			md.rotate(120);
+			while (me.isMoving() || md.isMoving());
+			
+			me.rotate(1300, true);
+			md.rotate(1300);
+			while (me.isMoving() || md.isMoving());
+
+			me.rotate(-1200, true);
+			md.rotate(-1200);
+			while (me.isMoving() || md.isMoving());
+			
+			me.rotate(-60, true);
+			md.rotate(120);
+			while (me.isMoving() || md.isMoving());
+			
+			me.rotate(1600, true);
+			md.rotate(1600);
+			while (me.isMoving() || md.isMoving());
+			
+			me.rotate(-1500, true);
+			md.rotate(-1500);
+			while (me.isMoving() || md.isMoving());
+			
+			me.rotate(-60, true);
+			md.rotate(120);
+			while (me.isMoving() || md.isMoving());
+			
+			me.rotate(1300, true);
+			md.rotate(1300);
+			while (me.isMoving() || md.isMoving());
+
+			me.rotate(-1200, true);
+			md.rotate(-1200);
+			while (me.isMoving() || md.isMoving());
+			
+			me.rotate(360, true);
+			md.rotate(-180);
+			while (me.isMoving() || md.isMoving());
+			
+			md.rotate(100,true);
+			me.rotate(170);
+			
 			
 			while (x<3) {
 			while (range>0.1) {
@@ -47,10 +92,10 @@ public class Resgate {
 			range = uss.getRange();
 			
 			System.out.println("range "+range);
-			while (range>0.045) {
-				if (range<0.06) {
-					md.rotate(-200, true);
-					me.rotate(-200);
+			while (range>0.043) {
+				if (range<0.056) {
+					md.rotate(-220, true);
+					me.rotate(-220);
 					while (mg.isMoving());
 					
 					mg.forward();
@@ -61,13 +106,19 @@ public class Resgate {
 					Delay.msDelay(1000);
 					while (mg.isMoving());
 					
+					md.setSpeed(300);
+					me.setSpeed(240);
+					
 					md.forward();
 					me.forward();
-					Delay.msDelay(1250);
+					Delay.msDelay(100);
 					md.stop();
 					me.stop();
 				}
 				else {
+					md.setSpeed(200);
+					me.setSpeed(200);
+					
 					me.forward();
 					md.forward();
 					Delay.msDelay(500);
@@ -95,7 +146,7 @@ public class Resgate {
 			range = uss.getRange();
 			System.out.println("range "+range);
 
-			if (range>0.09) {
+			if (range>0.6) {
 				//parede 
 				
 				Sound.beepSequenceUp();
@@ -103,19 +154,16 @@ public class Resgate {
 				me.rotate(-400);
 				while (me.isMoving() || md.isMoving());
 
-				mg.setSpeed(100);
 				mg.backward();
 				Delay.msDelay(1000);
 				while (mg.isMoving());
 				
-				md.rotate(850, true);
+				md.rotate(900, true);
 				me.rotate(10);
 				while (me.isMoving() || md.isMoving());
 				
-				me.forward();
-				Delay.msDelay(200);
-				me.stop();
-				
+				md.rotate(100,true);
+				me.rotate(170);
 			}
 			else {
 				//area de deposito 
@@ -126,12 +174,12 @@ public class Resgate {
 				md.rotate(-200);
 				while (me.isMoving() || md.isMoving());
 				
-				me.rotate(-400, true);
-				md.rotate(480);
+				me.rotate(-500, true);
+				md.rotate(550,true);
 				while (me.isMoving() || md.isMoving());
 				
-				me.rotate(-400, true);
-				md.rotate(480);
+				me.rotate(-500, true);
+				md.rotate(550,true);
 				while (me.isMoving() || md.isMoving());
 				
 				me.setSpeed(200);
@@ -142,26 +190,37 @@ public class Resgate {
 				me.stop();
 				md.stop();
 				
-				// parte de abrir a cancela do motor medio que o ayllon nao fez 
-				
-				me.rotate(300,true);
-				md.rotate(300);
-				
-				me.rotate(-400, true);
-				md.rotate(480);
-				while (me.isMoving() || md.isMoving());
-				
-				me.rotate(-400, true);
-				md.rotate(480);
-				while (me.isMoving() || md.isMoving());
-				
-				mg.setSpeed(100);
 				mg.backward();
 				Delay.msDelay(1000);
 				while (mg.isMoving());
 				
-				md.rotate(900, true);
-				me.rotate(10);
+				mm.rotate(-90);
+				
+				me.rotate(100, true);
+				md.rotate(100);
+				while (me.isMoving() || md.isMoving());
+				
+				me.rotate(-100, true);
+				md.rotate(-100);
+				while (me.isMoving() || md.isMoving());
+				
+				mm.rotate(90);
+
+				me.rotate(300,true);
+				md.rotate(300);
+				
+				md.rotate(-400, true);
+				me.rotate(480);
+				while (me.isMoving() || md.isMoving());
+				
+				md.rotate(-400, true);
+				me.rotate(480);
+				while (me.isMoving() || md.isMoving());
+				
+				
+				
+				md.rotate(500, true);
+				me.rotate(-10);
 				while (me.isMoving() || md.isMoving());
 			}
 			x++;
@@ -194,5 +253,6 @@ public class Resgate {
 		me.close();
 		md.close();
 		mg.close();
+		mm.close();
 	}
 }

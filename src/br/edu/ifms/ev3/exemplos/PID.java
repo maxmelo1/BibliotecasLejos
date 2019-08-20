@@ -137,7 +137,7 @@ public class PID {
 			range = uss.getRange();
 			
 			// gap
-			if ((corD>0.7 && corE>0.8) || (corD>0.8 && corE>0.6)) {
+			if (corD>0.7 && corE>0.7) {
 				while ((corD>0.6 && corE>0.6) && range>0.04) {
 					range = uss.getRange();
 					colorD.setRedMode();
@@ -149,7 +149,8 @@ public class PID {
 			}
 			
 			//parte de dois pretos 
-			else if (corD<0.3 && corE<0.3) {
+			else if (corD<=0.2 && corE<=0.2) {
+				
 				colorD.setColorIdMode();
 				colorE.setColorIdMode();
 				System.out.println(colorE.getColorID() + "  "+ colorD.getColorID());
@@ -158,11 +159,11 @@ public class PID {
 						gd.getMd().setSpeed(200);
 						gd.getMe().setSpeed(200);
 						
-						gd.getMd().rotate(-420, true);
-						gd.getMe().rotate(480,true);
+						gd.getMd().rotate(-500, true);
+						gd.getMe().rotate(500);
 						while (gd.getMe().isMoving()||gd.getMd().isMoving());
-						gd.getMd().rotate(-420, true);
-						gd.getMe().rotate(480,true);
+						gd.getMd().rotate(-500, true);
+						gd.getMe().rotate(500);
 						while (gd.getMe().isMoving()||gd.getMd().isMoving());
 												
 					while (corE>0.5) {
@@ -198,17 +199,15 @@ public class PID {
 			}
 			
 			//curva com verde para a esquerda
-			else if (corE<=0.29) {
-					gd.getMd().rotate(-5,true);
-					gd.getMe().rotate(-5);
-				colorE.setColorIdMode();
+			else if (corE<=0.2) {
+					colorE.setColorIdMode();
 
 		        
 				if (colorE.getColorID() == 2) { 
 					integral=0;
 											
-					Sound.beepSequenceUp();
-					while ((corD<0.75 || corE>0.35) && range>=0.04) {
+					
+					while ((corD<0.65 || corE>0.45) && range>=0.04) {
 						
 						range = uss.getRange();
 						colorD.setRedMode();
@@ -234,12 +233,12 @@ public class PID {
 				}
 				//curva sem verde para a esquerda  
 				else {
-				integral = 1;
-				while ((corD>0.6 || corE<0.4 )&& range>0.04) {
+				integral = 2;
+				while ((corD>0.5 || corE<0.4 )&& range>0.04) {
 				range = uss.getRange();
 				colorE.setRedMode();
-				corE = colorE.getAmbient();
 				colorD.setRedMode();
+				corE = colorE.getAmbient();
 				corD = colorD.getAmbient();
 				
 				error = 10*(corD - media); //parcela proporcional
@@ -262,14 +261,15 @@ public class PID {
 			}
 			
 			// curva com verde para a direita
-			else if (corD<=0.3) {
+			else if (corD<=0.2) {
 				colorD.setColorIdMode();
 
 		       
 		        
 				if (colorD.getColorID() == 1) {
+					Sound.beepSequenceUp();
 					integral = 0;
-					while ((corE<0.75 || corD>0.35)&& range>=.04) {
+					while ((corE<0.65 || corD>0.45)&& range>=.04) {
 					range = uss.getRange();
 					colorE.setRedMode();
 					colorD.setRedMode();
@@ -295,8 +295,8 @@ public class PID {
 				}
 				//curva sem verde para a direita 
 				else {
-				integral = 1;
-				while ((corE>0.55 || corD<0.4) && range>=.04) {
+				integral = 2;
+				while ((corE>0.4 && corD<0.6) && range>=.04) {
 					range = uss.getRange();
 					colorE.setRedMode();
 					colorD.setRedMode();
@@ -326,7 +326,7 @@ public class PID {
 			// segue linha normal com pid direito
 			else {
 				integral = 0;
-				while ((corD>0.3 && corE>0.29) && (corD<0.7||corE<0.7) && range>=.04) {
+				while ((corD>0.2 && corE>0.2) && (corD<0.8||corE<0.7) && range>=.04) {
 				colorD.setRedMode();
 				colorE.setRedMode();
 				corD = colorD.getAmbient();
