@@ -4,6 +4,7 @@ import br.edu.ifms.ev3.wrappers.ColorSensor;
 import br.edu.ifms.ev3.wrappers.GyroSensor;
 import br.edu.ifms.ev3.wrappers.UltraSonicSensor;
 import lejos.hardware.Button;
+import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
@@ -19,10 +20,10 @@ public class PID {
 		UltraSonicSensor ussl = new UltraSonicSensor(SensorPort.S3);
 
 		double error;
-		double media = 0.45;
+		double media = 0.5;
 		double corD, corE;
 		// 17 39 0
-		int kp = 18, kd = 43;
+		int kp = 18, kd = 45;
 		int dir,prop;
 		double deriv, integral = 0, ki = 0.9;
 		long time;
@@ -119,6 +120,10 @@ public class PID {
 				gd.getMd().rotate(-400, true);
 				gd.getMe().rotate(480);
 				while (gd.getMe().isMoving());
+				
+				gd.getMd().rotate(-300, true);
+				gd.getMe().rotate(-300);
+				while (gd.getMe().isMoving());
 
 			}               
 			/*else if (gyro.getAngle()<-10) {
@@ -132,7 +137,7 @@ public class PID {
 			range = uss.getRange();
 			
 			// gap
-			if ((corD>0.65 && corE>0.8) || (corD>0.8 && corE>0.6)) {
+			if ((corD>0.7 && corE>0.8) || (corD>0.8 && corE>0.6)) {
 				while ((corD>0.6 && corE>0.6) && range>0.04) {
 					range = uss.getRange();
 					colorD.setRedMode();
@@ -144,7 +149,7 @@ public class PID {
 			}
 			
 			//parte de dois pretos 
-			else if (corD<0.3 && corE<0.33) {
+			else if (corD<0.3 && corE<0.3) {
 				colorD.setColorIdMode();
 				colorE.setColorIdMode();
 				System.out.println(colorE.getColorID() + "  "+ colorD.getColorID());
@@ -153,18 +158,16 @@ public class PID {
 						gd.getMd().setSpeed(200);
 						gd.getMe().setSpeed(200);
 						
-						gd.getMd().rotate(-400, true);
-						gd.getMe().rotate(480);
-						while (gd.getMe().isMoving());
-						gd.getMd().rotate(-400, true);
-						gd.getMe().rotate(480);
-						while (gd.getMe().isMoving());
+						gd.getMd().rotate(-420, true);
+						gd.getMe().rotate(480,true);
+						while (gd.getMe().isMoving()||gd.getMd().isMoving());
+						gd.getMd().rotate(-420, true);
+						gd.getMe().rotate(480,true);
+						while (gd.getMe().isMoving()||gd.getMd().isMoving());
 												
-					while (corD>0.5) {
+					while (corE>0.5) {
 						gd.moveAng(100, speed);
-						colorD.setRedMode();
 						colorE.setRedMode();
-						corD = colorD.getAmbient();
 						corE = colorE.getAmbient();
 					}
 				}
@@ -177,17 +180,36 @@ public class PID {
 					range = uss.getRange();
 					gd.moveAng(0, speed);
 				}
+				colorD.setColorIdMode();
+				if (colorD.getColorID() == 1) {
+					colorD.setRedMode();
+					while (colorD.getAmbient()<0.3) {
+						gd.moveAng(0, speed);
+					}
+					}
+				colorE.setColorIdMode();
+				if (colorE.getColorID() == 2) {
+					colorE.setRedMode();
+					while (colorE.getAmbient()<0.3) {
+						gd.moveAng(0, speed);
+					}
+				}
 				}
 			}
 			
-			//curva com verde para a esquerda 
-			else if (corE<=0.26) {
+			//curva com verde para a esquerda
+			else if (corE<=0.29) {
+					gd.getMd().rotate(-5,true);
+					gd.getMe().rotate(-5);
 				colorE.setColorIdMode();
 
 		        
 				if (colorE.getColorID() == 2) { 
 					integral=0;
+											
+					Sound.beepSequenceUp();
 					while ((corD<0.75 || corE>0.35) && range>=0.04) {
+						
 						range = uss.getRange();
 						colorD.setRedMode();
 						colorE.setRedMode();
@@ -212,8 +234,8 @@ public class PID {
 				}
 				//curva sem verde para a esquerda  
 				else {
-				integral = -1;
-				while ((corD>0.5 && corE<0.5 )&& range>0.04) {
+				integral = 1;
+				while ((corD>0.6 || corE<0.4 )&& range>0.04) {
 				range = uss.getRange();
 				colorE.setRedMode();
 				corE = colorE.getAmbient();
@@ -273,8 +295,8 @@ public class PID {
 				}
 				//curva sem verde para a direita 
 				else {
-				integral = -1;
-				while (corE>0.55 && corD<0.4 && range>=.04) {
+				integral = 1;
+				while ((corE>0.55 || corD<0.4) && range>=.04) {
 					range = uss.getRange();
 					colorE.setRedMode();
 					colorD.setRedMode();
@@ -304,7 +326,7 @@ public class PID {
 			// segue linha normal com pid direito
 			else {
 				integral = 0;
-				while ((corD>0.3 && corE>0.26) && (corD<0.7||corE<0.7) && range>=.04) {
+				while ((corD>0.3 && corE>0.29) && (corD<0.7||corE<0.7) && range>=.04) {
 				colorD.setRedMode();
 				colorE.setRedMode();
 				corD = colorD.getAmbient();

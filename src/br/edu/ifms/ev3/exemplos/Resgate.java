@@ -2,6 +2,7 @@ package br.edu.ifms.ev3.exemplos;
 
 import br.edu.ifms.ev3.wrappers.UltraSonicSensor;
 import lejos.hardware.Button;
+import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
@@ -14,6 +15,8 @@ public class Resgate {
 		EV3LargeRegulatedMotor mg = new EV3LargeRegulatedMotor(MotorPort.A);
 		UltraSonicSensor uss = new UltraSonicSensor(SensorPort.S4);
 		
+		int x;
+		
 		//abre a garra 
 		mg.setSpeed(100);
 		mg.backward();
@@ -23,9 +26,16 @@ public class Resgate {
 		//procura a area segura 
 		md.setSpeed(200);
 		me.setSpeed(200);
+		me.forward();
+		Delay.msDelay(200);
+		me.stop();
 		float range = uss.getRange();
 		
 		while (Button.ESCAPE.isUp()) {
+			x=0;
+			// espalha as bolinhas
+			
+			while (x<3) {
 			while (range>0.1) {
 				md.forward();
 				me.forward();
@@ -35,54 +45,127 @@ public class Resgate {
 			me.forward();
 			Delay.msDelay(500);
 			range = uss.getRange();
+			
 			System.out.println("range "+range);
-			if (range<0.045) {
-				md.rotate(-200, true);
-				me.rotate(-200);
-				while (mg.isMoving());
+			while (range>0.045) {
+				if (range<0.06) {
+					md.rotate(-200, true);
+					me.rotate(-200);
+					while (mg.isMoving());
+					
+					mg.forward();
+					Delay.msDelay(1500);
+					while (mg.isMoving());
+					
+					mg.backward();
+					Delay.msDelay(1000);
+					while (mg.isMoving());
+					
+					md.forward();
+					me.forward();
+					Delay.msDelay(1250);
+					md.stop();
+					me.stop();
+				}
+				else {
+					me.forward();
+					md.forward();
+					Delay.msDelay(500);
+					md.stop();
+					me.stop();
+				}
 				
-				mg.forward();
-				Delay.msDelay(1500);
-				while (mg.isMoving());
-				
-				md.forward();
-				me.forward();
-				Delay.msDelay(1500);
+				range = uss.getRange();
+				System.out.println("range "+range);
 			}
-			else {
-				me.forward();
-				md.forward();
-				Delay.msDelay(600);
-			}
+			md.rotate(-200, true);
+			me.rotate(-200);
+			while (mg.isMoving());
+
+			mg.forward();
+			Delay.msDelay(1500);
+			while (mg.isMoving());
+			
+			md.forward();
+			me.forward();
+			Delay.msDelay(1500);
+			md.stop();
+			me.stop();
+			
 			range = uss.getRange();
 			System.out.println("range "+range);
-			if (range>0.06) {
-				md.rotate(-180, true);
-				me.rotate(-180);
-				while (me.isMoving() || md.isMoving());
-				me.rotate(80,true);
-				md.rotate(200);
+
+			if (range>0.09) {
+				//parede 
+				
+				Sound.beepSequenceUp();
+				md.rotate(-400, true);
+				me.rotate(-400);
 				while (me.isMoving() || md.isMoving());
 
-
-			}else if (range>.035) {
-				// programacao de deposito 
+				mg.setSpeed(100);
+				mg.backward();
+				Delay.msDelay(1000);
+				while (mg.isMoving());
+				
+				md.rotate(850, true);
+				me.rotate(10);
+				while (me.isMoving() || md.isMoving());
+				
+				me.forward();
+				Delay.msDelay(200);
+				me.stop();
+				
 			}
 			else {
-				md.rotate(-200, true);
-				me.rotate(-200);
+				//area de deposito 
+				
+				Button.LEDPattern(4);
+				
+				me.rotate(-200, true);
+				md.rotate(-200);
+				while (me.isMoving() || md.isMoving());
+				
+				me.rotate(-400, true);
+				md.rotate(480);
+				while (me.isMoving() || md.isMoving());
+				
+				me.rotate(-400, true);
+				md.rotate(480);
+				while (me.isMoving() || md.isMoving());
+				
+				me.setSpeed(200);
+				md.setSpeed(200);
+				me.backward();
+				md.backward();
+				Delay.msDelay(1000);
+				me.stop();
+				md.stop();
+				
+				// parte de abrir a cancela do motor medio que o ayllon nao fez 
+				
+				me.rotate(300,true);
+				md.rotate(300);
+				
+				me.rotate(-400, true);
+				md.rotate(480);
+				while (me.isMoving() || md.isMoving());
+				
+				me.rotate(-400, true);
+				md.rotate(480);
+				while (me.isMoving() || md.isMoving());
+				
+				mg.setSpeed(100);
+				mg.backward();
+				Delay.msDelay(1000);
 				while (mg.isMoving());
 				
-				mg.forward();
-				Delay.msDelay(1500);
-				while (mg.isMoving());
-				
-				md.forward();
-				me.forward();
-				Delay.msDelay(1500);
+				md.rotate(900, true);
+				me.rotate(10);
+				while (me.isMoving() || md.isMoving());
 			}
-
-			
+			x++;
+			}
 			
 		}
 		/*while (md.getRotationSpeed()>190 && me.getRotationSpeed()>190) {

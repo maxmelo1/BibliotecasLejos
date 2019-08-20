@@ -67,7 +67,7 @@ public class LeituraSensorCor {
 
         Delay.msDelay(1000);*/
 
-       /* colorE.setColorIdMode();
+        colorE.setColorIdMode();
         colorD.setColorIdMode();
         colorE.setFloodLight(false);
         colorD.setFloodLight(false);
@@ -85,7 +85,9 @@ public class LeituraSensorCor {
         
         Delay.msDelay(250);
         
-       */ while (Button.ESCAPE.isUp()) {
+        Button.waitForAnyPress();
+
+        while (Button.ESCAPE.isUp()) {
         	colorD.setRedMode();
         	colorE.setRedMode();
         	System.out.println("ambiente da cor direita: " + colorD.getAmbient());

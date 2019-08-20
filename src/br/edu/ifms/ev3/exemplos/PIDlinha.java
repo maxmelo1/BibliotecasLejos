@@ -41,7 +41,7 @@ public class PIDlinha {
 		corE = colorE.getAmbient();
 		range= uss.getRange();
 		
-		if (corD<0.15) {
+		/*if (corD<0.15) {
 			if (corE<0.2) {
 				while ((corD<0.18 || corE<0.18)&& range>.15) {
 					colorD.setRedMode();
@@ -61,7 +61,7 @@ public class PIDlinha {
 					}
 				}
 				}
-		}
+		}*/
 		error = 10*(corE - media); //parcela proporcional
 		prop = (int)(error * kp);
 		
