@@ -19,7 +19,7 @@ public class PID {
 		ColorSensor  colorE = new ColorSensor(SensorPort.S2);
 		GyroSensor giro = new GyroSensor(SensorPort.S3);
 		
-		double error;
+		double error; 
 		double media = 0.5;
 		double corD, corE;
 		// 17 39 0
@@ -32,7 +32,12 @@ public class PID {
 		float speed=100, range;
 		
 		// variaveis de controle 
+		
+		Button.waitForAnyPress();
+		while (Button.ENTER.isUp()) {
+		
 		while (Button.ESCAPE.isUp()) {
+			
 			range = uss.getRange();
 			 /*if (giro.getAngularVelocity()>-10f) {
 				speed= 400;
@@ -134,7 +139,7 @@ public class PID {
 			
 			// gap
 			if (corD>=0.7 && corE>=0.7) {
-				while ((corD>0.6 && corE>0.6) && range>0.04) {
+				while ((corD>0.6 && corE>0.6) && range>0.04 && Button.ESCAPE.isUp()) {
 					range = uss.getRange();
 					colorD.setRedMode();
 					colorE.setRedMode();
@@ -203,7 +208,7 @@ public class PID {
 					integral=0;
 											
 					
-					while ((corD<0.65 || corE>0.45) && range>=0.04) {
+					while ((corD<0.65 || corE>0.45) && range>=0.04 && Button.ESCAPE.isUp()) {
 						
 						range = uss.getRange();
 						colorD.setRedMode();
@@ -230,7 +235,7 @@ public class PID {
 				//curva sem verde para a esquerda  
 				else {
 				integral = 2;
-				while ((corD>0.5 || corE<0.4 )&& range>0.04) {
+				while ((corD>0.5 || corE<0.4 )&& range>0.04 && Button.ESCAPE.isUp()) {
 				range = uss.getRange();
 				colorE.setRedMode();
 				colorD.setRedMode();
@@ -265,7 +270,7 @@ public class PID {
 				if (colorD.getColorID() == 1) {
 					Sound.beepSequenceUp();
 					integral = 0;
-					while ((corE<0.65 || corD>0.45)&& range>=.04) {
+					while ((corE<0.65 || corD>0.45)&& range>=.04 && Button.ESCAPE.isUp()) {
 					range = uss.getRange();
 					colorE.setRedMode();
 					colorD.setRedMode();
@@ -292,7 +297,7 @@ public class PID {
 				//curva sem verde para a direita 
 				else {
 				integral = 2;
-				while ((corE>0.4 && corD<0.6) && range>=.04) {
+				while ((corE>0.4 && corD<0.6) && range>=.04 && Button.ESCAPE.isUp()) {
 					range = uss.getRange();
 					colorE.setRedMode();
 					colorD.setRedMode();
@@ -322,7 +327,7 @@ public class PID {
 			// segue linha normal com pid direito
 			else {
 				integral = 0;
-				while ((corD>0.2 && corE>0.2) && (corD<0.7||corE<0.7) && range>=.04) {
+				while ((corD>0.2 && corE>0.2) && (corD<0.7||corE<0.7) && range>=.04 && Button.ESCAPE.isUp()) {
 				colorD.setRedMode();
 				colorE.setRedMode();
 				corD = colorD.getAmbient();
@@ -348,6 +353,12 @@ public class PID {
 			}
 			}		 
 			
+		}
+		gd.getMd().stop(true);
+		gd.getMe().stop(true);
+		
+		Button.waitForAnyPress();
+		
 		}
 		gd.getMe().close();
 		gd.getMd().close();

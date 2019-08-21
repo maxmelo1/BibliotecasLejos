@@ -20,7 +20,7 @@ public class Resgate {
 		int x;
 		
 		//abre a garra 
-		mg.setSpeed(250);
+		mg.setSpeed(250); 
 		mg.backward();
 		Delay.msDelay(1000);
 		while (mg.isMoving());
