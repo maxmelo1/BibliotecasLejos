@@ -72,8 +72,8 @@ public class Resgate {
 			md.rotate(-1200);
 			while (me.isMoving() || md.isMoving());
 			
-			me.rotate(360, true);
-			md.rotate(-180);
+			me.rotate(400, true);
+			md.rotate(-600);
 			while (me.isMoving() || md.isMoving());
 			
 			md.rotate(100,true);
@@ -107,13 +107,13 @@ public class Resgate {
 					while (mg.isMoving());
 					
 					md.setSpeed(300);
-					me.setSpeed(240);
+					me.setSpeed(250);
 					
 					md.forward();
 					me.forward();
 					Delay.msDelay(100);
-					md.stop();
-					me.stop();
+					md.stop(true);
+					me.stop(true);
 				}
 				else {
 					md.setSpeed(200);

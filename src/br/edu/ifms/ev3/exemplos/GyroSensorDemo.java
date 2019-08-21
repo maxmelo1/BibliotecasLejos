@@ -16,7 +16,7 @@ public class GyroSensorDemo {
 	        while (Button.ESCAPE.isUp())
 	        {
 	            
-	            System.out.println("Angulo: " + gyro.getAngle());
+	            System.out.println("Angulo: " + gyro.getSensor());
 
 	            Delay.msDelay(250);
 	        }

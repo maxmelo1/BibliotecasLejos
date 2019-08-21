@@ -17,8 +17,8 @@ public class PID {
 		UltraSonicSensor uss = new UltraSonicSensor(SensorPort.S4);
 		ColorSensor  colorD = new ColorSensor(SensorPort.S1);
 		ColorSensor  colorE = new ColorSensor(SensorPort.S2);
-		UltraSonicSensor ussl = new UltraSonicSensor(SensorPort.S3);
-
+		GyroSensor giro = new GyroSensor(SensorPort.S3);
+		
 		double error;
 		double media = 0.5;
 		double corD, corE;
@@ -32,10 +32,9 @@ public class PID {
 		float speed=100, range;
 		
 		// variaveis de controle 
-		
 		while (Button.ESCAPE.isUp()) {
 			range = uss.getRange();
-			/*if (gyro.getAngle()>10) {
+			 /*if (giro.getAngularVelocity()>-10f) {
 				speed= 400;
 				colorD.setRedMode();
 				colorE.setRedMode();
@@ -87,11 +86,11 @@ public class PID {
 				dir= dir*(-1);
 				gd.moveAng(dir, 150f);
 				}*/
+			 
 			System.out.println("distancia: " + range);
 			if (range<=0.04) {
 				gd.getMd().setSpeed(200);
 				gd.getMe().setSpeed(200);
-				
 				
 				gd.getMd().rotate(-400, true);
 				gd.getMe().rotate(480);
@@ -101,7 +100,7 @@ public class PID {
 				gd.getMd().rotate(300);
 				while (gd.getMe().isMoving());
 				
-				gd.getMd().rotate(900, true);
+				gd.getMd().rotate(880, true);
 				gd.getMe().stop();
 				while (gd.getMd().isMoving());
 				
@@ -109,7 +108,7 @@ public class PID {
 				gd.getMe().rotate(480);
 				while (gd.getMe().isMoving());
 				
-				gd.getMd().rotate(900, true);
+				gd.getMd().rotate(880, true);
 				gd.getMe().stop();
 				while (gd.getMd().isMoving());
 				
@@ -126,9 +125,6 @@ public class PID {
 				while (gd.getMe().isMoving());
 
 			}               
-			/*else if (gyro.getAngle()<-10) {
-				speed = 300;
-			}*/
 			else {
 			colorD.setRedMode();
 			colorE.setRedMode();
@@ -137,7 +133,7 @@ public class PID {
 			range = uss.getRange();
 			
 			// gap
-			if (corD>0.7 && corE>0.7) {
+			if (corD>=0.7 && corE>=0.7) {
 				while ((corD>0.6 && corE>0.6) && range>0.04) {
 					range = uss.getRange();
 					colorD.setRedMode();
@@ -326,7 +322,7 @@ public class PID {
 			// segue linha normal com pid direito
 			else {
 				integral = 0;
-				while ((corD>0.2 && corE>0.2) && (corD<0.8||corE<0.7) && range>=.04) {
+				while ((corD>0.2 && corE>0.2) && (corD<0.7||corE<0.7) && range>=.04) {
 				colorD.setRedMode();
 				colorE.setRedMode();
 				corD = colorD.getAmbient();
@@ -358,7 +354,7 @@ public class PID {
 		colorD.close();
 		colorE.close();
 		uss.close();	
-		ussl.close();
+		giro.close();
 	}
 	}
 
