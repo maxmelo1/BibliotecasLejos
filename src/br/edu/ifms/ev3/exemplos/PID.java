@@ -17,7 +17,8 @@ public class PID {
 		UltraSonicSensor uss = new UltraSonicSensor(SensorPort.S4);
 		ColorSensor  colorD = new ColorSensor(SensorPort.S1);
 		ColorSensor  colorE = new ColorSensor(SensorPort.S2);
-		GyroSensor giro = new GyroSensor(SensorPort.S3);
+		//GyroSensor giro = new GyroSensor(SensorPort.S3);
+		UltraSonicSensor ussl = new UltraSonicSensor(SensorPort.S3);
 		
 		double error; 
 		double media = 0.5;
@@ -29,7 +30,7 @@ public class PID {
 		long time;
 		long lastTime = 0;
 		double lastError = 0.0f;
-		float speed=100, range;
+		float speed=100, range = 0.5f;
 		
 		// variaveis de controle 
 		
@@ -38,29 +39,28 @@ public class PID {
 		
 		while (Button.ESCAPE.isUp()) {
 			
-			range = uss.getRange();
-			 /*if (giro.getAngularVelocity()>-10f) {
-				speed= 400;
+			if (ussl.getRange()<=0.09) {
+				speed = 300;
+				while (ussl.getRange()<=0.09) {
 				colorD.setRedMode();
 				colorE.setRedMode();
-				corE = colorE.getAmbient();
 				corD = colorD.getAmbient();
-				
-				if ((corD>0.65 && corE>0.8) || (corD>0.8 && corE>0.6)) {
-					while ((corD>0.6 && corE>0.6) && range>0.05) {
+				corE = colorE.getAmbient();
+				if (corD>=0.7 && corE>=0.7) {
+					
+					while ((corD>0.6 && corE>0.6) && Button.ESCAPE.isUp()) {
 						range = uss.getRange();
 						colorD.setRedMode();
 						colorE.setRedMode();
 						corD = colorD.getAmbient();
 						corE = colorE.getAmbient();
 						gd.moveAng(0, speed);
-						
 					}
 				}
 				
 				//parte de dois pretos 
-				else if (corD<0.3 && corE<0.33) {
-					while ((corD<0.2 || corE<0.2)&& range>.15) {
+				else if (corD<=0.4 && corE<=0.4) {
+					while (corD<0.5 && corE<0.5) {
 						colorD.setRedMode();
 						colorE.setRedMode();
 						corD = colorD.getAmbient();
@@ -68,29 +68,42 @@ public class PID {
 						range = uss.getRange();
 						gd.moveAng(0, speed);
 					}
+					if (ussl.getRange()>0.12) {
+						//resgate 
+						Sound.twoBeeps();
 					}
-				colorD.setRedMode();
-				colorE.setRedMode();
-				corD = colorD.getAmbient();
-				corE = colorE.getAmbient();
-				range = uss.getRange();
-				
-				error = 10*(corD - media); //parcela proporcional
-				prop = (int)(error * kp);
 
-				time = System.currentTimeMillis();//parcela derivativa
-				deriv = kd*(error - lastError)/(time - lastTime);
-				lastTime = time;
-				lastError = error;				
-				integral = ki*(error + integral); //parcela integral
+				}
+				else {
+					colorD.setRedMode();
+					colorE.setRedMode();
+					corD = colorD.getAmbient();
+					corE = colorE.getAmbient();
+					range = uss.getRange();
+					
+					error = 10*(corD - media); //parcela proporcional
+					prop = (int)(error * kp);
 
-				System.out.println("int: "+integral);
-				dir = (int)(deriv + prop + integral);//movimento
-				System.out.println("dir: "+dir);
-				dir = dir< 100? dir : 100;
-				dir= dir*(-1);
-				gd.moveAng(dir, 150f);
-				}*/
+					time = System.currentTimeMillis();//parcela derivativa
+					deriv = kd*(error - lastError)/(time - lastTime);
+					lastTime = time;
+					lastError = error;				
+					integral = ki*(error + integral); //parcela integral
+
+					System.out.println("int: "+integral);
+					dir = (int)(deriv + prop + integral);//movimento
+					System.out.println("dir: "+dir);
+					dir = dir< 100? dir : 100;
+					dir= dir*(-1);
+					gd.moveAng(dir, 150f);
+				}
+				}
+
+			}
+			else {
+				speed=100;
+			
+			range = uss.getRange();
 			 
 			System.out.println("distancia: " + range);
 			if (range<=0.04) {
@@ -139,6 +152,7 @@ public class PID {
 			
 			// gap
 			if (corD>=0.7 && corE>=0.7) {
+				
 				while ((corD>0.6 && corE>0.6) && range>0.04 && Button.ESCAPE.isUp()) {
 					range = uss.getRange();
 					colorD.setRedMode();
@@ -150,8 +164,8 @@ public class PID {
 			}
 			
 			//parte de dois pretos 
-			else if (corD<=0.2 && corE<=0.2) {
-				
+			else if (corD<=0.21 && corE<=0.21) {
+					
 				colorD.setColorIdMode();
 				colorE.setColorIdMode();
 				System.out.println(colorE.getColorID() + "  "+ colorD.getColorID());
@@ -198,7 +212,6 @@ public class PID {
 				}
 				}
 			}
-			
 			//curva com verde para a esquerda
 			else if (corE<=0.2) {
 					colorE.setColorIdMode();
@@ -207,7 +220,7 @@ public class PID {
 				if (colorE.getColorID() == 2) { 
 					integral=0;
 											
-					
+					ki = 1;
 					while ((corD<0.65 || corE>0.45) && range>=0.04 && Button.ESCAPE.isUp()) {
 						
 						range = uss.getRange();
@@ -234,7 +247,8 @@ public class PID {
 				}
 				//curva sem verde para a esquerda  
 				else {
-				integral = 2;
+				integral = 4;
+				ki = 1;
 				while ((corD>0.5 || corE<0.4 )&& range>0.04 && Button.ESCAPE.isUp()) {
 				range = uss.getRange();
 				colorE.setRedMode();
@@ -258,6 +272,7 @@ public class PID {
 				dir= dir*(-1);
 				gd.moveAng(dir, speed);
 				}
+				ki=0.9;
 				}
 			}
 			
@@ -270,7 +285,7 @@ public class PID {
 				if (colorD.getColorID() == 1) {
 					Sound.beepSequenceUp();
 					integral = 0;
-					while ((corE<0.65 || corD>0.45)&& range>=.04 && Button.ESCAPE.isUp()) {
+					while ((corE<0.65 || corD>0.4)&& range>=.04 && Button.ESCAPE.isUp()) {
 					range = uss.getRange();
 					colorE.setRedMode();
 					colorD.setRedMode();
@@ -296,7 +311,8 @@ public class PID {
 				}
 				//curva sem verde para a direita 
 				else {
-				integral = 2;
+				integral = 4;
+				
 				while ((corE>0.4 && corD<0.6) && range>=.04 && Button.ESCAPE.isUp()) {
 					range = uss.getRange();
 					colorE.setRedMode();
@@ -351,7 +367,8 @@ public class PID {
 				gd.moveAng(dir, 150f);
 				}
 			}
-			}		 
+			}
+			}
 			
 		}
 		gd.getMd().stop(true);
@@ -365,7 +382,7 @@ public class PID {
 		colorD.close();
 		colorE.close();
 		uss.close();	
-		giro.close();
+		ussl.close();
 	}
 	}
 

@@ -11,7 +11,7 @@ public class UltraSonicDemo
     public static void main(String[] args)
     {
         float                range;
-        UltraSonicSensor     uss = new UltraSonicSensor(SensorPort.S4);
+        UltraSonicSensor     uss = new UltraSonicSensor(SensorPort.S3);
         
         System.out.println("UltraSonic Demo");
         System.out.println("Press any key to start");
