@@ -10,6 +10,11 @@ import lejos.hardware.port.SensorPort;
 import lejos.remote.ev3.RemoteEV3;
 import lejos.robotics.Color;
 
+/**
+ * Used to calibrate white and black sensed values. Sensor distance may affect precision.
+ * @author gin
+ *
+ */
 public class CalibrationUtil {
 	private RemoteEV3 ev3 = null;
 	private ColorSensor cs;
@@ -33,6 +38,8 @@ public class CalibrationUtil {
 		cs.setFloodLight(Color.RED);
 		
 		System.out.println("aperte UP no lego para finalizar o programa");
+		
+		//TODO automate offset estimation as a global parameter.
 		while(Button.UP.isUp()) {
 			float aux = cs.getAmbient();
 			System.out.println(aux);

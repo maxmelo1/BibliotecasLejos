@@ -12,7 +12,11 @@ import lejos.remote.ev3.RMIRegulatedMotor;
 import lejos.remote.ev3.RMISampleProvider;
 import lejos.remote.ev3.RemoteEV3;
 import lejos.robotics.Color;
-
+/**
+ * Example of proportional controller. Constants may need calibration before testing.
+ * @author gin
+ *
+ */
 public class ProportionalController {
 	private RMISampleProvider sampleProvider = null;
 	private RemoteEV3 ev3 = null;
@@ -29,6 +33,9 @@ public class ProportionalController {
 	//needed because of lego speed seetings (0 - 700 degrees/sec)
 	private final Float SCALE_FACTOR = 10f;
 	
+	//TODO to implement graphics of: position error, linear and angular velocities.
+	//TODO to compute RMS error metric.
+	//TODO to test with literature known trajectories.
 	public ProportionalController() {
 		try {
 			ev3 = new RemoteEV3("10.0.1.1");
