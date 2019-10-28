@@ -10,6 +10,12 @@ import lejos.remote.ev3.RMIRegulatedMotor;
 import lejos.remote.ev3.RMISampleProvider;
 import lejos.remote.ev3.RemoteEV3;
 import lejos.utility.Delay;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 //import lejos.utility.Delay;
 
 public class MonitorLego {
@@ -32,6 +38,62 @@ public class MonitorLego {
 	double lastError = 0.0;
 	int speed = 200, curva = 0;
 	
+	private void pid (float corD) {
+		error = 10*(corD - media); //parcela proporcional
+		prop = (int)(error * kp);
+
+		time = System.currentTimeMillis();//parcela derivativa
+		deriv = kd*(error - lastError)/(time - lastTime);
+		lastTime = time;
+		lastError = error;
+		integral = ki*(error + integral); //parcela integral
+
+		System.out.println("int: "+integral);
+		dir = (int)(deriv + prop + integral);//movimento
+		System.out.println("dir: "+dir);
+		dir = dir< 100? dir : 100;
+		dir = dir * (-1);
+		gd.moveAng(dir, 100);
+	}
+	
+	private void gravar (float valor) {
+		File file = new File("C:\\Users\\armando\\Desktop\\OBR Java\\erros.txt");
+		try {
+			file.delete();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+			
+		try {
+			file.createNewFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		FileWriter fw;
+		PrintWriter pw;
+		BufferedWriter bw;
+		try {
+			fw = new FileWriter(file, true);
+			pw = new PrintWriter(fw);
+			bw = new BufferedWriter(pw);
+			String v = String.valueOf(valor);
+			bw.write(v);
+			bw.newLine();
+			
+			bw.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private void andarReto () {
+		gd.moveAng(0, speed);
+	}
 
 	public MonitorLego() {
 		
@@ -50,60 +112,22 @@ public class MonitorLego {
 
 			
 			this.gd = new RMIGuidedDriver(me,md);
+			int i =0;
 			
-			while (Button.ESCAPE.isUp()) {
+			
+			while (i<100) {
+				corE = sampleProvider.fetchSample()[0];
+				gravar (corE);
+				andarReto();
+				i++;
+			}
+			
+			/*while (Button.ESCAPE.isUp()) {
 				corD = sampleProvider2.fetchSample()[0];
 				corE = sampleProvider.fetchSample()[0];
 				System.out.println("cor direita: " + corD);
 				System.out.println("cor esquerda: " + corE);
-				
-				if (corE<=0.12) {
-					curva = 1;
-					System.out.println("to na curva");
-				}
-				if (corD>0.7) {
-					if (curva ==1) {
-						while (corE>0.5) {
-							corE = sampleProvider.fetchSample()[0];
-							System.out.println("cor esquerda: " + corE);
-							gd.moveAng(-100, speed);
-						}
-						curva = 0;
-					}
-					else {
-						while (corD>0.75) {
-							corD = sampleProvider2.fetchSample()[0];
-							System.out.println("cor direita: " + corD);
-							gd.moveAng(0, speed);
-						}
-						
-					}
-				}
-	
-					 
-							
-							
-							error = 10*(corD - media); //parcela proporcional
-							prop = (int)(error * kp);
-			
-							time = System.currentTimeMillis();//parcela derivativa
-							deriv = kd*(error - lastError)/(time - lastTime);
-							lastTime = time;
-							lastError = error;
-							integral = ki*(error + integral); //parcela integral
-
-							System.out.println("int: "+integral);
-							dir = (int)(deriv + prop + integral);//movimento
-							System.out.println("dir: "+dir);
-							dir = dir< 100? dir : 100;
-							dir = dir * (-1);
-							gd.moveAng(dir, 100);
-						
-						
-				
-			}
-			
-			
+			}		*/
 			gd.getMd().stop(true);
 			gd.getMe().stop(true);
 			

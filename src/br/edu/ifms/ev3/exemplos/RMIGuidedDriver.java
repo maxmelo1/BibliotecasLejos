@@ -143,12 +143,12 @@ public class RMIGuidedDriver {
 				md.setSpeed(speed-ang);
 				
 				if(speed-ang<0) {
-					me.forward();
-					md.backward();
+					me.backward();
+					md.forward();
 				}
 				else {
-					me.forward();
-					md.forward();
+					me.backward();
+					md.backward();
 				}
 				}
 				else {
@@ -156,12 +156,12 @@ public class RMIGuidedDriver {
 					md.setSpeed(speed);
 					
 					if(speed+ang<0) {
-						md.forward();
-						me.backward();
+						md.backward();
+						me.forward();
 					}
 					else {
-						me.forward();
-						md.forward();
+						me.backward();
+						md.backward();
 					}
 				}
 				System.out.println("md: "+speed);
