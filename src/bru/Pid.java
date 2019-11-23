@@ -41,8 +41,7 @@ public class Pid {
 		       motorB.setSpeed(vetor[0]);
 		        motorC.setSpeed(vetor[1]);
 		        
-		        motorB.stop();
-		        motorC.stop();
+		        
 	      
 	       }
 	}
