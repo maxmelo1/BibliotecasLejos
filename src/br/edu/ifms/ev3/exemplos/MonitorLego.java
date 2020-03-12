@@ -56,22 +56,8 @@ public class MonitorLego {
 		gd.moveAng(dir, 100);
 	}
 	
-	private void gravar (float valor) {
-		File file = new File("C:\\Users\\armando\\Desktop\\OBR Java\\erros.txt");
-		try {
-			file.delete();
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-			
-		try {
-			file.createNewFile();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
+	private void gravar (float valor, File file) {
+
 		FileWriter fw;
 		PrintWriter pw;
 		BufferedWriter bw;
@@ -101,25 +87,36 @@ public class MonitorLego {
 			ev3 = new RemoteEV3("10.0.1.1");
 			
 			System.out.println("ev3 nulo? " + (ev3 == null));
-			sampleProvider 	= ev3.createSampleProvider("S2", "lejos.hardware.sensor.EV3ColorSensor", "Red");
-			sampleProvider2 = ev3.createSampleProvider("S1", "lejos.hardware.sensor.EV3ColorSensor", "Red");
+			sampleProvider 	= ev3.createSampleProvider("S1", "lejos.hardware.sensor.EV3ColorSensor", "Red");
+			//sampleProvider2 = ev3.createSampleProvider("S1", "lejos.hardware.sensor.EV3ColorSensor", "Red");
 
 			float corE = sampleProvider.fetchSample()[0];
-			float corD = sampleProvider2.fetchSample()[0];
+			//float corD = sampleProvider2.fetchSample()[0];
 			
-			me = ev3.createRegulatedMotor("B", 'L');
-			md = ev3.createRegulatedMotor("A", 'L');
+			me = ev3.createRegulatedMotor("A", 'L');
+			md = ev3.createRegulatedMotor("B", 'L');
 
+			File file = new File("C:\\Users\\armando\\Desktop\\OBR Java\\erros.txt");
+			try {
+				file.delete();
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+				
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 			this.gd = new RMIGuidedDriver(me,md);
-			int i =0;
 			
 			
-			while (i<100) {
+			while (Button.DOWN.isUp()) {
 				corE = sampleProvider.fetchSample()[0];
-				gravar (corE);
-				andarReto();
-				i++;
+				gravar (corE,file);
+				Delay.msDelay(20);
 			}
 			
 			/*while (Button.ESCAPE.isUp()) {
@@ -138,7 +135,7 @@ public class MonitorLego {
 		finally {
 			try {
 				sampleProvider.close();
-				sampleProvider2.close();
+				//sampleProvider2.close();
 				gd.getMd().close();
 				gd.getMe().close();
 				
@@ -149,7 +146,7 @@ public class MonitorLego {
 			}
 		}	
 	}
-	
+	                                           
 
 	public static void main(String[] args) {
 		new MonitorLego();

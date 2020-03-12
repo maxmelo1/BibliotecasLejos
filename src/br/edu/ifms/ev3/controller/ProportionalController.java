@@ -10,14 +10,18 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 import br.edu.ifms.ev3.wrappers.ColorSensor;
+import br.edu.ifms.ev3.wrappers.GyroSensor;
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
+import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.remote.ev3.RMIRegulatedMotor;
 import lejos.remote.ev3.RMISampleProvider;
 import lejos.remote.ev3.RemoteEV3;
 import lejos.robotics.Color;
+import lejos.utility.Delay;
 /**
  * Example of proportional controller. Constants may need calibration before testing.
  * @author gin
@@ -30,16 +34,19 @@ public class ProportionalController {
 	private RMIRegulatedMotor md;
 	private ColorSensor cs;
 	private ColorSensor csd;
+	//private GyroSensor gyro;
 	private File file;
 	private File file2;
+	private File filec;
+	private File filed;
 	/**
 	 * constants definition
 	 */
-	private final Float setPoint = 0.41f;
-	private final Integer TP = 20;
-	private final Float KP = 5f;
+	private final Float setPoint = 0.45f;
+	private final Integer TP = 80;
+	private final Float KP = 12f, KD = 60f, KI = 0f;
 	//needed because of lego speed seetings (0 - 700 degrees/sec)
-	private final Float SCALE_FACTOR = 10f;
+	private final Float SCALE_FACTOR = 22f;
 	
 	
 	
@@ -48,11 +55,15 @@ public class ProportionalController {
 	//TODO to test with literature known trajectories.
 	public ProportionalController() {
 		
-		file = new File("C:\\Users\\armando\\Desktop\\OBR Java\\vsensor.txt");
+		file = new File("C:\\Users\\armando\\Desktop\\OBR Java\\proportional.txt");
 		file2 = new File("C:\\Users\\armando\\Desktop\\OBR Java\\erro.txt");
+		filec = new File("C:\\Users\\armando\\Desktop\\OBR Java\\controle.txt");
+		filed = new File("C:\\Users\\armando\\Desktop\\OBR Java\\derivative.txt");
 		try {
 			file.delete();
 			file2.delete();
+			filec.delete();
+			filed.delete();
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -60,6 +71,8 @@ public class ProportionalController {
 		try {
 			file.createNewFile();
 			file2.createNewFile();
+			filec.createNewFile();
+			filed.createNewFile();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -78,12 +91,14 @@ public class ProportionalController {
 		}
 		
 		//L -> large, M-> medium
-		me = ev3.createRegulatedMotor("A", 'L');
-		md = ev3.createRegulatedMotor("B", 'L');
+		me = ev3.createRegulatedMotor("C", 'L');
+		md = ev3.createRegulatedMotor("D", 'L');
 		
-		cs = new ColorSensor(SensorPort.S1);
-		csd = new ColorSensor(SensorPort.S2);
-		
+		cs = new ColorSensor(SensorPort.S3);
+		csd = new ColorSensor(SensorPort.S1);
+		//gyro = new GyroSensor(SensorPort.S3);
+		//sampleProvider 	= ev3.createSampleProvider("S3", "lejos.hardware.sensor.EV3GyroSensor",null);
+
 		cs.setRedMode();
 		cs.setFloodLight(Color.RED);
 		csd.setRedMode();
@@ -101,6 +116,7 @@ public class ProportionalController {
 			md.close();
 			cs.close();
 			csd.close();
+			//gyro.close();
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -108,41 +124,69 @@ public class ProportionalController {
 	}
 	
 	private void proportional() throws RemoteException {
-		float actual, e;
+		float actual, e, cord, lastError=0f, deriv,integral=0;
+		long time, lastTime=0;
 		
 		//smooth starting
 		me.setAcceleration(100);
 		md.setAcceleration(100);
 		
-		me.setSpeed(200);
-		md.setSpeed(200);
 		
-		me.backward();
-		md.backward();
+		//me.setSpeed(250);
+		//md.setSpeed(250);
 		
+		//me.backward();
+		//md.backward();
+		//gyro.resetGyro();
 		while(Button.UP.isUp()) {
+       		//System.out.println("Angulo: " + gyro.getAngle());
+
 			actual = cs.getAmbient();
 			
-			if (csd.getAmbient()>0.7&&cs.getAmbient()>0.7) {
+			/*if (csd.getAmbient()>0.7&&cs.getAmbient()>0.7) {
 				boolean aux = verifica90();
 				if (aux==true) {
 					Sound.beep();
 				}
-			}
+			}*/
 			
-			if (csd.getAmbient()<0.15) {
+			/*if (csd.getAmbient()<0.15) {
 				me.stop(true);
 				md.stop(true);
-				break;
-			}
+				Delay.msDelay(300);
+				gyro.resetGyro();
+				
+				Sound.beepSequenceUp();
+
+				me.setSpeed(150);
+				md.setSpeed(150);
+				me.backward();
+	       		md.forward();
+	       		
+				while (gyro.getAngle()>-90 && Button.UP.isUp()) {
+		       		System.out.println("Angulo: " + gyro.getAngle());
+		       		
+		       	}
+				me.stop(true);
+				md.stop(true);
+								
+			}*/
 			
 			e = setPoint-actual;
 			float g = (float) ((float) SCALE_FACTOR*(e+0.33));
-			gravarErro(e);
-			gravarValor(actual);
-			turn(SCALE_FACTOR*e*KP);
+			time = System.currentTimeMillis();//parcela derivativa
+			deriv = KD*(e*SCALE_FACTOR - lastError)/(time - lastTime);
+			lastTime = time;
+			lastError = e;
+			integral = KI*(e*SCALE_FACTOR + integral);
+			gravar(e,file2);
+			gravar(deriv,filed);
+			gravar(e*KP*SCALE_FACTOR, file);
 			
-			System.out.println("error " + (SCALE_FACTOR*KP*e*g) );
+			turn(SCALE_FACTOR*e*KP+deriv+integral);
+			
+			gravar(SCALE_FACTOR*e*KP+deriv, filec);
+			System.out.println("error " + (SCALE_FACTOR*KP*e));
 			
 		}
 	}
@@ -152,10 +196,24 @@ public class ProportionalController {
 		me.setSpeed((int)(TP - error));
 		md.setSpeed((int)(TP + error));
 		
+		if (TP - error>0) {
+			me.backward();
+		}
+		else {
+			me.forward();
+		}
+		
+		if (TP+error>0) {
+			md.backward();
+		}
+		else {
+			md.forward();
+		}
+		
 	}
 	
 	private boolean verifica90 () {
-		while (cs.getAmbient()>0.2 && System.currentTimeMillis()/1000>15) {
+		//while (cs.getAmbient()>0.2 && gyro.getAngle()<45) {
 			try {
 				md.backward();
 				me.forward();
@@ -163,7 +221,7 @@ public class ProportionalController {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
+		//}
 		try {
 			me.stop(true);
 			md.stop(true);
@@ -177,28 +235,7 @@ public class ProportionalController {
 		return false;
 	}
 	
-	private void gravarErro (float valor) {
-		
-		FileWriter fw;
-		PrintWriter pw;
-		BufferedWriter bw;
-		try {
-			fw = new FileWriter(file2, true);
-			pw = new PrintWriter(fw);
-			bw = new BufferedWriter(pw);
-			String v = String.valueOf(valor);
-			bw.write(v);
-			bw.newLine();
-			
-			bw.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
-	
-	private void gravarValor (float valor) {
+	private void gravar (float valor, File file) {
 		
 		FileWriter fw;
 		PrintWriter pw;

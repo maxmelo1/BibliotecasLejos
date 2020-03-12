@@ -15,10 +15,10 @@ public class ExemploMotorRegulado {
 		
 		
 		//frescura com o padrão de leds do brick
-		Button.LEDPattern(4);
+		/*Button.LEDPattern(4);
 		Sound.beepSequenceUp();
 		
-		Button.waitForAnyPress();
+		Button.waitForAnyPress();*/
 		
 		EV3LargeRegulatedMotor me = new EV3LargeRegulatedMotor(MotorPort.A);
 		EV3LargeRegulatedMotor md = new EV3LargeRegulatedMotor(MotorPort.B);
@@ -58,23 +58,25 @@ public class ExemploMotorRegulado {
         me.resetTachoCount();
         md.resetTachoCount();*/
 		
-		me.rotate(360, true);
-        md.rotate(360, true);
-        Button.waitForAnyPress();
-        me.rotate(360, true);
-        md.rotate(-360, true);
-
+		me.setSpeed(200);
+		md.setSpeed(200);
+		
+		me.forward();
+		md.backward();
+		
+		
+		while (Button.DOWN.isUp());
         /*Button.waitForAnyPress();
 
         System.out.println("tach=" + me.getTachoCount());*/
         
-        Button.waitForAnyPress();
+       // Button.waitForAnyPress();
         
         // free up motor resources.
         me.close();
         md.close();
         
-        Sound.beepSequence();    // we are done.
+        //Sound.beepSequence();    // we are done.
 		
 		
 		

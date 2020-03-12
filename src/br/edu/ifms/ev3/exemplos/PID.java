@@ -24,13 +24,13 @@ public class PID {
 		double media = 0.5;
 		double corD, corE;
 		// 17 39 0
-		int kp = 18, kd = 45;
+		int kp = 17, kd = 39;
 		int dir,prop;
 		double deriv, integral = 0, ki = 0.9;
 		long time;
 		long lastTime = 0;
 		double lastError = 0.0f;
-		float speed=100, range = 0.5f;
+		float speed=100, range = 0.5f, lado;
 		
 		// variaveis de controle 
 		
@@ -38,18 +38,20 @@ public class PID {
 		while (Button.ENTER.isUp()) {
 		
 		while (Button.ESCAPE.isUp()) {
-			
-			if (ussl.getRange()<=0.09) {
+			lado = ussl.getRange();
+			if (lado<=0.09) {
 				speed = 300;
-				while (ussl.getRange()<=0.09) {
+				while (lado<=0.09) {
+				lado = ussl.getRange();
 				colorD.setRedMode();
 				colorE.setRedMode();
 				corD = colorD.getAmbient();
 				corE = colorE.getAmbient();
 				if (corD>=0.7 && corE>=0.7) {
 					
-					while ((corD>0.6 && corE>0.6) && Button.ESCAPE.isUp()) {
+					while ((corD>0.6 && corE>0.6) && lado<0.09 && Button.ESCAPE.isUp()) {
 						range = uss.getRange();
+						lado = ussl.getRange();
 						colorD.setRedMode();
 						colorE.setRedMode();
 						corD = colorD.getAmbient();
@@ -153,8 +155,9 @@ public class PID {
 			// gap
 			if (corD>=0.7 && corE>=0.7) {
 				
-				while ((corD>0.6 && corE>0.6) && range>0.04 && Button.ESCAPE.isUp()) {
+				while ((corD>0.6 && corE>0.6) && (lado >0.9 && range>0.04) && Button.ESCAPE.isUp()) {
 					range = uss.getRange();
+					lado = ussl.getRange();
 					colorD.setRedMode();
 					colorE.setRedMode();
 					corD = colorD.getAmbient();
@@ -220,10 +223,10 @@ public class PID {
 				if (colorE.getColorID() == 2) { 
 					integral=0;
 											
-					ki = 1;
-					while ((corD<0.65 || corE>0.45) && range>=0.04 && Button.ESCAPE.isUp()) {
+					while ((corD<0.65 || corE>0.45) && (range>=.04 && lado>0.09) && Button.ESCAPE.isUp()) {
 						
 						range = uss.getRange();
+						lado = ussl.getRange();
 						colorD.setRedMode();
 						colorE.setRedMode();
 						corD = colorD.getAmbient();
@@ -247,10 +250,10 @@ public class PID {
 				}
 				//curva sem verde para a esquerda  
 				else {
-				integral = 4;
-				ki = 1;
-				while ((corD>0.5 || corE<0.4 )&& range>0.04 && Button.ESCAPE.isUp()) {
+				integral = 3;
+				while ((corD>0.5 || corE<0.4 )&& (range>=.04 && lado>0.09) && Button.ESCAPE.isUp()) {
 				range = uss.getRange();
+				lado = ussl.getRange();
 				colorE.setRedMode();
 				colorD.setRedMode();
 				corE = colorE.getAmbient();
@@ -272,7 +275,6 @@ public class PID {
 				dir= dir*(-1);
 				gd.moveAng(dir, speed);
 				}
-				ki=0.9;
 				}
 			}
 			
@@ -285,8 +287,9 @@ public class PID {
 				if (colorD.getColorID() == 1) {
 					Sound.beepSequenceUp();
 					integral = 0;
-					while ((corE<0.65 || corD>0.4)&& range>=.04 && Button.ESCAPE.isUp()) {
+					while ((corE<0.65 || corD>0.4)&& (range>=.04 && lado>0.09) && Button.ESCAPE.isUp()) {
 					range = uss.getRange();
+					lado = ussl.getRange();
 					colorE.setRedMode();
 					colorD.setRedMode();
 					corE = colorE.getAmbient();
@@ -311,10 +314,11 @@ public class PID {
 				}
 				//curva sem verde para a direita 
 				else {
-				integral = 4;
+				integral = 3;
 				
-				while ((corE>0.4 && corD<0.6) && range>=.04 && Button.ESCAPE.isUp()) {
+				while ((corE>0.4 && corD<0.6) && (range>=.04 && lado>0.09) &&  Button.ESCAPE.isUp()) {
 					range = uss.getRange();
+					lado = ussl.getRange();
 					colorE.setRedMode();
 					colorD.setRedMode();
 					corD = colorD.getAmbient();
@@ -343,9 +347,10 @@ public class PID {
 			// segue linha normal com pid direito
 			else {
 				integral = 0;
-				while ((corD>0.2 && corE>0.2) && (corD<0.7||corE<0.7) && range>=.04 && Button.ESCAPE.isUp()) {
+				while ((corD>0.2 && corE>0.2) && (corD<0.7||corE<0.7) && (range>=.04 && lado>0.09)&& Button.ESCAPE.isUp()) {
 				colorD.setRedMode();
 				colorE.setRedMode();
+				lado = ussl.getRange();
 				corD = colorD.getAmbient();
 				corE = colorE.getAmbient();
 				range = uss.getRange();

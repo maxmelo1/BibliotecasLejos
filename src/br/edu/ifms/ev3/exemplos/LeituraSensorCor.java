@@ -11,7 +11,7 @@ import lejos.utility.Delay;
 public class LeituraSensorCor {
 	public static void main(String[] args) {
 		ColorSensor    colorD = new ColorSensor(SensorPort.S1);
-		ColorSensor	   colorE = new ColorSensor(SensorPort.S2);
+		ColorSensor	   colorE = new ColorSensor(SensorPort.S3);
         
         
         //será deus????
@@ -67,7 +67,7 @@ public class LeituraSensorCor {
 
         Delay.msDelay(1000);*/
 
-        colorE.setColorIdMode();
+        /*colorE.setColorIdMode();
         colorD.setColorIdMode();
         colorE.setFloodLight(false);
         colorD.setFloodLight(false);
@@ -77,18 +77,18 @@ public class LeituraSensorCor {
             //Lcd.clear(7);
             //Lcd.print(7, "id=%s", ColorSensor.colorName(color.getColorID()));
         	//System.out.printf("id=%s\n", ColorSensor.colorName(color.getColorID()));
-            System.out.println("id da cor direita: " + colorD.getColorID());
-            System.out.println("id da cor esquerda: " + colorE.getColorID());
+            //System.out.println("id da cor direita: " + colorD.getColorID());
+            //System.out.println("id da cor esquerda: " + colorE.getColorID());
 
             Delay.msDelay(250);
         }
         
         Delay.msDelay(250);
         
-        Button.waitForAnyPress();
+        Button.waitForAnyPress();*/
 
         while (Button.ESCAPE.isUp()) {
-        	colorD.setRedMode();
+        	colorD.setRedMode();																																	
         	colorE.setRedMode();
         	System.out.println("ambiente da cor direita: " + colorD.getAmbient());
             System.out.println("ambiente da cor esquerda: " + colorE.getAmbient());
