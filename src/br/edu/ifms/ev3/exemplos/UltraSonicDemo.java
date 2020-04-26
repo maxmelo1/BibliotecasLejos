@@ -5,6 +5,7 @@ import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.*;
 import lejos.hardware.port.*;
+import lejos.utility.Delay;
 
 public class UltraSonicDemo
 {
@@ -19,7 +20,7 @@ public class UltraSonicDemo
          while (Button.ESCAPE.isUp()) {
 			range =uss.getRange();
 			System.out.println("range: "+range);
-			
+			Delay.msDelay(100);
 		}
     
         
